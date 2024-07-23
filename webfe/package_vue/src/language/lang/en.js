@@ -2715,4 +2715,13 @@ export default {
   '是否忽略 {n} 模块闲置提醒？': 'Ignore the idle reminder for {n} modules?',
   '忽略后，该模块的': 'After ignoring, the',
   '将在 6 个月内不出现在闲置应用列表中，若 6 个月后继续闲置，将重新提醒。': 'of this module will not appear in the idle application list for 6 months. If it remains idle after 6 months, you will be reminded again.',
+  未修改: 'Not Modified',
+  选择组织: 'Select Organization',
+  蓝盾项目: 'Blue Shield Project',
+  提交审核: 'Submit for Review',
+  正在审批中: 'Under Review',
+  请用英文分号分隔: 'Please use English semicolons to separate',
+  暂未设置可见范围: 'Visibility range not yet set',
+  '请输入蓝盾项目 Project ID，并用英文分号分隔': 'Please enter the Blue Shield Project ID and separate them with English semicolons',
+  '修改可见范围需由<i class="bold">平台管理员</i>进行审批': 'Changes to the visibility range require approval from the <i class="bold">platform administrator</i>',
 };
