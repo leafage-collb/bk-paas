@@ -1095,6 +1095,7 @@ const router = new Router({
 });
 
 router.beforeEach(async (to, from, next) => {
+  console.log('to', to);
   sessionStorage.setItem('NOTICE', true);
   if (window.location.href.indexOf(window.GLOBAL_CONFIG.V3_OA_DOMAIN) !== -1) {
     const url = window.location.href.replace(window.GLOBAL_CONFIG.V3_OA_DOMAIN, window.GLOBAL_CONFIG.V3_WOA_DOMAIN);

@@ -1,5 +1,6 @@
 <template lang="html">
   <div class="container biz-create-success">
+    <!-- 22222 -->
     <paas-plugin-title :name="isOfficialVersion ? $t('新建版本') : $t('新建测试')" />
     <paas-content-loader
       :is-loading="isLoading"
@@ -125,6 +126,7 @@
                 v-model="curVersion.version"
                 @change="changeVersionType"
               >
+                <!-- 示例 -->
                 <bk-radio
                   v-bk-tooltips.top="$t('非兼容式升级时使用')"
                   :value="curVersion.semver_choices.major"
@@ -150,6 +152,7 @@
               :required="true"
               :property="'version'"
             >
+              {{ curVersion.version }}
               <bk-input
                 v-model="curVersion.version"
                 :placeholder="isOfficialVersion ? $t('版本号') : $t('测试号')"
@@ -351,6 +354,7 @@ export default {
     },
   },
   watch: {
+    // 监听
     'curVersion.source_versions'() {
       const versionData = this.sourceVersions.find(item => item.name === this.curVersion.source_versions) || {};
       this.curVersion.comment = versionData.message;
@@ -360,7 +364,11 @@ export default {
         } else {
           this.curVersion.version = versionData.revision;
         }
+        console.log('change');
       }
+    },
+    'curVersion.version'(newVal) {
+      console.log('newVal', newVal);
     },
   },
   created() {
@@ -454,6 +462,7 @@ export default {
       // 当前选中分支的数据
       const versionData = this.sourceVersions.filter(item => item.name === this.curVersion.source_versions);
 
+      // 数据
       const data = {
         source_version_type: versionData[0].type,
         source_version_name: versionData[0].name,
@@ -476,6 +485,10 @@ export default {
         pluginId: this.pluginId,
         data,
       };
+      if (params) {
+        console.log('p', params);
+        return;
+      }
       try {
         const res = await this.$store.dispatch('plugin/createVersion', params);
         this.$bkMessage({

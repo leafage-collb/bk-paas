@@ -33,6 +33,10 @@ const pluginVersionEditor = () => import(/* webpackChunkName: 'plugin-version' *
   window.showDeployTip(error);
 });
 
+const pluginNewVersion = () => import(/* webpackChunkName: 'plugin-version' */'@/views/plugin-center/plugin/version-manager/new-version').then(module => module).catch((error) => {
+  window.showDeployTip(error);
+});
+
 const pluginLog = () => import(/* webpackChunkName: 'plugin-version' */'@/views/plugin-center/plugin/log/index').then(module => module).catch((error) => {
   window.showDeployTip(error);
 });
@@ -168,6 +172,18 @@ export const pluginRouter = [
           supportBack: true,
         },
       },
+      // codecc 新建版本
+      {
+        path: ':pluginTypeId/:id/new-version',
+        component: pluginNewVersion,
+        name: 'pluginNewVersion',
+        meta: {
+          pathName: i18n.t('新建版本发布'),
+          capture403Error: false,
+          supportBack: true,
+        },
+      },
+      // 新建版本
       {
         path: ':pluginTypeId/:id/version-edit',
         component: pluginVersionEditor,
