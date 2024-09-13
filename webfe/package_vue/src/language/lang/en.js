@@ -2810,4 +2810,5 @@ export default {
   测试号: 'Test number',
   已终止: 'Terminated',
   '主版本号、次版本号、修正版本号': 'Major version number, minor version number, patch version number',
+  '正式发布需由<em>平台管理员</em>进行审批。': 'Formal release requires approval from the <em>platform administrator</em>.',
 };
