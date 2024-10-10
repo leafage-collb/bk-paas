@@ -36,12 +36,12 @@ export default {
       } else {
         window.addEventListener('resize', el.resizeEventHandler, false);
       }
-    }, 1300);
+    }, 1000);
   },
   update: (el, binding) => {
     setTimeout(() => {
       el.echartsInstance.setOption(binding.value);
-    }, 1300);
+    }, 1000);
   },
   unbind: (el) => {
     setTimeout(() => {
@@ -53,5 +53,5 @@ export default {
         window.removeEventListener('resize', _this.resizeEventHandler, false);
       }
     }, 1300);
-  }
+  },
 };
