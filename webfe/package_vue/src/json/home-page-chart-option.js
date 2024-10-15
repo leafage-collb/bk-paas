@@ -23,10 +23,10 @@
 export default function (data, color) {
   // 判断是否为空
   const allZero = data.every(d => d.value === 0);
-  const legendIcons = [
-    'image:///static/images/circle-home1.svg',
-    'image:///static/images/circle-home2.svg',
-  ];
+  // const legendIcons = [
+  //   'image:///static/images/circle-home1.svg',
+  //   'image:///static/images/circle-home2.svg',
+  // ];
   return {
     tooltip: {
       trigger: 'item',
@@ -34,32 +34,31 @@ export default function (data, color) {
         return `${params.name}\n${params.value}`;
       },
     },
-    legend: {
-      orient: 'vertical',
-      left: '60%',
-      top: 'middle',
-      itemHeight: 10,
-      itemWidth: 10,
-      selectedMode: false,
-      data: data.map((item, index) => ({
-        name: item.name,
-        icon: allZero ? legendIcons[index] : 'circle',
-        textStyle: {
-          color: '#63656E',
-          fontSize: 12,
-          padding: [3, 0, 0, 0],
-        },
-      })),
-      formatter(name) {
-        const item = data.find(d => d.name === name);
-        return `${name}：${item.value}`;
-      },
-    },
+    // legend: {
+    //   orient: 'vertical',
+    //   left: '60%',
+    //   top: 'middle',
+    //   itemHeight: 10,
+    //   itemWidth: 10,
+    //   selectedMode: false,
+    //   data: data.map((item, index) => ({
+    //     name: item.name,
+    //     icon: allZero ? legendIcons[index] : 'circle',
+    //     textStyle: {
+    //       color: '#63656E',
+    //       fontSize: 12,
+    //       padding: [3, 0, 0, 0],
+    //     },
+    //   })),
+    //   formatter(name) {
+    //     const item = data.find(d => d.name === name);
+    //     return `${name}：${item.value}`;
+    //   },
+    // },
     color: allZero ? ['#B5E0AB'] : color,
     series: [
       {
         type: 'pie',
-        center: ['40%', '50%'],
         radius: ['50', '66'],
         avoidLabelOverlap: false,
         label: {
@@ -97,7 +96,7 @@ export default function (data, color) {
           },
         },
         // 当数据为0时，不进行动画（不缩放）
-        hoverAnimation: !allZero,
+        hoverAnimation: false,
         data,
       },
     ],

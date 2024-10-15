@@ -31,22 +31,34 @@
     <div class="app-overview-container">
       <!-- 告警情况 -->
       <div
-        class="alarm-status card-style"
+        class="alarm-status card-style alarm-chart-box"
         v-if="platformFeature.MONITORING"
       >
         <div class="card-title chart-title">
           {{ $t('告警情况') }}
         </div>
-        <chart
+        <div
+          style="width: 150px; height: 200px"
           id="alarm-status"
           class="chart-el"
-        ></chart>
-        <div
+        ></div>
+        <!-- <div
           class="default-text"
           v-if="isAlarmLabel"
         >
           <p class="vlaue">{{ alarmDefaultLabel.value }}</p>
           <p class="name">{{ alarmDefaultLabel.name }}</p>
+        </div> -->
+        <div class="legend-box">
+          <div
+            class="item"
+            v-for="item in homeAlarmData"
+            :key="item.name"
+            @mouseenter="handlePieScale(item.name)"
+          >
+            <span class="legend-icon" :style="{ background: item.iconColor }"></span>
+            <span class="legend-name">{{ item.name }}：{{ item.value }}</span>
+          </div>
         </div>
         <!-- <div
           class="chart-el chart-alert"
@@ -54,7 +66,7 @@
         ></div> -->
       </div>
       <!-- 应用情况 -->
-      <div class="app-status card-style">
+      <div class="app-status card-style" v-show="false">
         <div class="card-title chart-title">
           {{ $t('应用情况') }}
         </div>
@@ -127,8 +139,18 @@ export default {
     },
     homeAlarmData() {
       return [
-        { value: this.alarmChartData.slowQueryCount, name: this.$t('慢查询告警数'), type: 'alarm' },
-        { value: this.alarmChartData.count, name: this.$t('总告警数'), type: 'alarm' },
+        {
+          value: this.alarmChartData.slowQueryCount,
+          name: this.$t('慢查询告警数'),
+          type: 'alarm',
+          iconColor: '#F5876C',
+        },
+        {
+          value: this.alarmChartData.count,
+          name: this.$t('总告警数'),
+          type: 'alarm',
+          iconColor: '#FFC685',
+        },
       ];
     },
     // 告警情况图表配置
@@ -161,16 +183,16 @@ export default {
       this.setChartFn('alarm');
     },
     // 应用
-    appChartData() {
-      this.setChartFn('app');
-    },
+    // appChartData() {
+    //   this.setChartFn('app');
+    // },
   },
   created() {
     this.getAppsInfoCount();
   },
   mounted() {
     this.setChartFn('alarm');
-    this.setChartFn('app');
+    // this.setChartFn('app');
     // 防抖
     window.addEventListener('resize', this.chartResize, false);
   },
@@ -236,7 +258,7 @@ export default {
       bus.$emit('home-date', this.curSelectionTime);
     },
     chartResize() {
-      this.alarmChart?.resize();
+      // this.alarmChart?.resize();
       this.appChart?.resize();
     },
     // 设置图表
@@ -247,10 +269,20 @@ export default {
         // 设置配置
         this[key] = echart;
         echart.setOption(option);
-        echart.on('mouseover', () => {
+        echart.on('mouseover', (params) => {
           fn(false);
+          // 取消所有高亮
+          this.homeAlarmData.forEach((v) => {
+            echart.dispatchAction({
+              type: 'downplay',
+              name: v.name,
+            });
+          });
+          // 清空之前显示效果
+          this.handlePieScale(params.data.name);
         });
-        echart.on('mouseout', () => {
+        echart.on('mouseout', (params) => {
+          this.handlePieScale('慢查询告警数');
           fn(true);
         });
         echart.on('highlight', () => {
@@ -259,7 +291,24 @@ export default {
         echart.on('downplay', () => {
           fn(true);
         });
+        echart.on('finished', () => {
+          echart.dispatchAction({
+            type: 'highlight',
+            name: this.$t('慢查询告警数'),
+          });
+        });
+        setTimeout(() => {
+          this.handlePieScale('慢查询告警数');
+        }, 500);
+        
       });
+    },
+    handlePieScale(curName) {
+      const statusMap = [this.$t('慢查询告警数'), this.$t('总告警数')];
+      const selectItem = [curName];
+      const unSelectItems = statusMap.filter((item) => item !== selectItem[0]);
+      this.alarmChart.dispatchAction({ type: 'highlight', name: selectItem });
+      this.alarmChart.dispatchAction({ type: 'downplay', name: unSelectItems });
     },
   },
 };
@@ -298,6 +347,33 @@ export default {
     margin-right: 16px;
     &:last-child {
       margin-right: 0;
+    }
+  }
+  .alarm-chart-box {
+    display: flex;
+    justify-content: center;
+    .legend-box {
+      margin: auto 0;
+      .item {
+        margin-left: 30px;
+        margin-top: 12px;
+        cursor: unset;
+        &:first-child{
+          margin-top: 0;
+        }
+        .legend-icon {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          margin-right: 8px;
+          transform: translateY(1px);
+        }
+        .legend-name {
+          font-size: 12px;
+          color: #313238;
+        }
+      }
     }
   }
   .alarm-status,
