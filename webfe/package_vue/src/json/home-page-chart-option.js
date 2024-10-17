@@ -37,7 +37,6 @@ export default function (data, color) {
       top: 'middle',
       itemHeight: 10,
       itemWidth: 10,
-      selectedMode: false,
       data: data.map((item, index) => ({
         name: item.name,
         icon: allZero ? legendIcons[index] : 'circle',
@@ -63,39 +62,6 @@ export default function (data, color) {
           normal: {
             show: false,
             position: 'center',
-            formatter: '',
-          },
-          emphasis: {
-            show: true,
-            formatter: (params) => {
-              const valueTag = params.data.colorType === 'high' ? 'valueHigh' : 'valueLow';
-              return `{${valueTag}|${params.value}}\n{name|${params.name}}`;
-            },
-            textStyle: {
-              align: 'center',
-              verticalAlign: 'middle',
-              rich: {
-                valueHigh: {
-                  fontSize: 28,
-                  fontWeight: 'bold',
-                  color: '#EA3636', // 红色
-                  align: 'center',
-                  lineHeight: 40,
-                },
-                valueLow: {
-                  fontSize: 28,
-                  fontWeight: 'bold',
-                  color: '#313238',
-                  align: 'center',
-                  lineHeight: 40,
-                },
-                name: {
-                  fontSize: 12,
-                  color: '#63656E',
-                  align: 'center',
-                },
-              },
-            },
           },
         },
         labelLine: {

@@ -27,12 +27,10 @@
           id="alarm-status"
           class="chart-el"
         ></chart>
-        <div
-          class="default-text"
-          v-if="isAlarmLabel"
-        >
-          <p :class="['vlaue', { high: alarmDefaultLabel.colorType === 'high' }]">{{ alarmDefaultLabel.value }}</p>
-          <p class="name">{{ alarmDefaultLabel.name }}</p>
+        <!-- 自定义控制高亮显示 -->
+        <div class="default-text">
+          <p :class="['vlaue', { high: emphasis.alarm.colorType === 'high' }]">{{ emphasis.alarm.value }}</p>
+          <p class="name">{{ emphasis.alarm.name }}</p>
         </div>
         <div class="date-change-box">
           <bk-select
@@ -74,10 +72,9 @@
         ></chart>
         <div
           class="default-text"
-          v-if="isAppLabel"
         >
-          <p :class="['vlaue', { high: appDefaultLabel.colorType === 'high' }]">{{ appDefaultLabel.value }}</p>
-          <p class="name">{{ appDefaultLabel.name }}</p>
+          <p :class="['vlaue', { high: emphasis.app.colorType === 'high' }]">{{ emphasis.app.value }}</p>
+          <p class="name">{{ emphasis.app.name }}</p>
         </div>
       </div>
       <!-- 运维开发分 -->
@@ -120,12 +117,11 @@ export default {
         { label: this.$t('一个月'), id: 30 },
       ],
       curSelectionTime: this.getSpecifiedDate(1),
-      appChart: null,
-      alarmChart: null,
-      // 应用情况默认值
-      isAppLabel: true,
       // 告警情况默认显示控制
-      isAlarmLabel: true,
+      emphasis: {
+        app: {},
+        alarm: {},
+      },
     };
   },
   computed: {
@@ -159,7 +155,7 @@ export default {
     },
     // 告警情况图表配置
     homeAlertChartOption() {
-      const colors = this.homeAlarmData.map(v => v.color);
+      const colors = this.homeAlarmData.map((v) => v.color);
       return alertChartOption(this.homeAlarmData, colors);
     },
     appChartData() {
@@ -169,14 +165,14 @@ export default {
           name: this.$t('闲置应用数'),
           type: 'app',
           colorType: 'high',
-          color: '#FFA66B'
+          color: '#FFA66B',
         },
         {
           value: this.chartAppInfo.total,
           name: this.$t('总应用数'),
           type: 'app',
           colorType: 'low',
-          color: '#3E96C2'
+          color: '#3E96C2',
         },
       ];
       if (data.find((v) => v.colorType === 'high' && v.value === 0)) {
@@ -186,29 +182,34 @@ export default {
     },
     // 应用情况图表配置
     appChartOption() {
-      const colors = this.appChartData.map(v => v.color);
+      const colors = this.appChartData.map((v) => v.color);
       return alertChartOption(this.appChartData, colors);
     },
     platformFeature() {
       return this.$store.state.platformFeature;
     },
-    appDefaultLabel() {
-      return this.appChartData.find((v) => v.value > 0) ?? this.appChartData[0];
-    },
-    alarmDefaultLabel() {
-      if (this.homeAlarmData.length > 1) {
-        return this.homeAlarmData.find((v) => v.value > 0) ?? this.homeAlarmData[1];
-      }
-      return this.homeAlarmData[0];
-    },
   },
   watch: {
-    homeAlarmData() {
-      this.setChartFn('alarm');
+    homeAlarmData: {
+      handler(newVal) {
+        this.setChartFn('alarm');
+        // 告警
+        if (newVal.length > 1) {
+          this.emphasis.alarm = newVal.find((v) => v.value > 0) ?? newVal[1];
+        } else {
+          this.emphasis.alarm = newVal[0];
+        }
+      },
+      immediate: true,
     },
     // 应用
-    appChartData() {
-      this.setChartFn('app');
+    appChartData: {
+      handler(newVal) {
+        this.setChartFn('app');
+        // 告警
+        this.emphasis.app = newVal.find((v) => v.value > 0) ?? newVal[0];
+      },
+      immediate: true,
     },
   },
   created() {
@@ -225,20 +226,14 @@ export default {
         this.chartSet({
           id: 'chart-app-status',
           option: this.appChartOption,
-          key: 'appChart',
-          fn: (value) => {
-            this.isAppLabel = value;
-          },
+          key: 'app',
         });
       } else {
         // 告警
         this.chartSet({
           id: 'alarm-status',
           option: this.homeAlertChartOption,
-          key: 'alarmChart',
-          fn: (value) => {
-            this.isAlarmLabel = value;
-          },
+          key: 'alarm',
         });
       }
     },
@@ -280,24 +275,23 @@ export default {
       bus.$emit('home-date', this.curSelectionTime);
     },
     // 设置图表
-    chartSet({ id, option, key, fn }) {
+    chartSet({ id, option, key }) {
       this.$nextTick(() => {
         // 初始化
         const echart = echarts.init(document.getElementById(id));
-        // 设置配置
-        this[key] = echart;
         echart.setOption(option);
-        echart.on('mouseover', () => {
-          fn(false);
+        echart.on('mouseover', (params) => {
+          this.emphasis[key] = params.data;
         });
-        echart.on('mouseout', () => {
-          fn(true);
+        echart.on('highlight', (params) => {
+          const data = key === 'app' ? this.appChartData : this.homeAlarmData;
+          this.emphasis[key] = data.find((v) => v.name === params.name);
         });
-        echart.on('highlight', () => {
-          fn(false);
-        });
-        echart.on('downplay', () => {
-          fn(true);
+        echart.on('legendselectchanged', function (params) {
+          var option = this.getOption();
+          // 取消点击事件
+          option.legend[0].selected[params.name] = true;
+          this.setOption(option);
         });
       });
     },
