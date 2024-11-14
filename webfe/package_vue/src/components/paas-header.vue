@@ -1,7 +1,7 @@
 <template>
   <div
     v-en-class="'en-header-cls'"
-    :class="['ps-header', 'clearfix', 'top-bar-wrapper', { 'bk-header-static': is_static }]"
+    :class="['ps-header', 'clearfix', 'top-bar-wrapper', { 'bk-header-static': isStatic }]"
   >
     <div class="ps-header-visible">
       <section class="nav-left-wrapper">
@@ -302,28 +302,15 @@ export default {
       userInitialized: false,
       avatars: defaultUserLogo,
       curpage: -1, // 当前页导航底部线标志控制
-      is_static: false, // 头部导航背景色块控制
+      isStatic: false, // 头部导航背景色块控制
       navIndex: 0,
       curSubNav: [],
-      loginFlag: false,
       user,
       backgroundHidden: false,
       navHideController: 0,
       navShowController: 0,
-      filterKey: '',
       enableSearchApp: true, // 是否开启搜索APP功能
-      currenSearchPanelIndex: -1,
       showLogVersion: false,
-      searchComponentList: [
-        {
-          title: this.$t('蓝鲸应用'),
-          component: 'searchAppList',
-          max: 4,
-          params: {
-            include_inactive: true,
-          },
-        },
-      ],
       // eslint-disable-next-line comma-dangle
       link: this.GLOBAL.LINK.APIGW_INDEX,
       navText: '',
@@ -401,11 +388,7 @@ export default {
     },
     // 监听滚动事件（滚动是头部样式切换）
     handleScroll() {
-      if (window.scrollY > 0) {
-        this.is_static = true;
-      } else {
-        this.is_static = false;
-      }
+      this.isStatic = window.scrollY > 0;
     },
     hideSubNav() {
       clearTimeout(this.navShowController);
@@ -430,17 +413,16 @@ export default {
     },
     // 路由页面重定向时导航标记
     checkRouter() {
+      const { name, path } = this.$route;
       let noteIndex = -1;
-      if (this.$route.name === 'index' || this.$route.name === 'home') {
+
+      if (['index', 'home'].includes(name)) {
         noteIndex = 0;
-      }
-      if (this.$route.path.indexOf('/developer-center/app') !== -1 || this.$route.path.indexOf('/sandbox') !== -1) {
+      } else if (path.includes('/developer-center/app') || path.includes('/sandbox')) {
         noteIndex = 1;
-      }
-      if (this.$route.path.indexOf('/plugin-center') !== -1) {
+      } else if (path.includes('/plugin-center')) {
         noteIndex = 2;
-      }
-      if (this.$route.path.indexOf('/developer-center/service') !== -1) {
+      } else if (path.includes('/developer-center/service')) {
         noteIndex = this.displayNavList.findIndex((v) => v.text === this.$t('服务')) || 3;
       }
       if (noteIndex !== -1) {
@@ -455,6 +437,7 @@ export default {
         window.location.href
       )}`;
     },
+    // 切换当前语言环境
     async switchLanguage(language) {
       const data = new URLSearchParams();
       data.append('language', language);

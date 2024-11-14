@@ -9,7 +9,7 @@
           <img
             src="/static/images/yahei-5.png"
             class="appear"
-          >
+          />
         </div>
         <router-link
           :to="{ name: 'createApp' }"
@@ -27,7 +27,7 @@
         <router-link
           v-if="isShowOffAppAction"
           :to="{ name: 'myApplications', query: { include_inactive: true } }"
-          style="margin-left: 0;"
+          style="margin-left: 0"
           class="btn-link spacing-h-x2"
         >
           {{ $t('查看已下架应用') }}
@@ -80,7 +80,9 @@
                 :href="item.url"
                 target="_blank"
                 class="paas-ask"
-              >{{ item.title }}</a>
+              >
+                {{ item.title }}
+              </a>
               <p>{{ item.info }}</p>
             </div>
           </div>
@@ -147,10 +149,9 @@ export default {
       next((vm) => {
         vm.setUserHasApp(userHasApp);
         if (!userHasApp) {
-          auth.requestOffApp()
-            .then((flag) => {
-              vm.isShowOffAppAction = flag;
-            });
+          auth.requestOffApp().then((flag) => {
+            vm.isShowOffAppAction = flag;
+          });
         }
       });
     });
@@ -161,10 +162,9 @@ export default {
       this.setUserHasApp(userHasApp);
       next(() => {
         if (!userHasApp) {
-          auth.requestOffApp()
-            .then((flag) => {
-              this.isShowOffAppAction = flag;
-            });
+          auth.requestOffApp().then((flag) => {
+            this.isShowOffAppAction = flag;
+          });
         }
       });
     });

@@ -26,27 +26,11 @@ import auth from '@/auth';
 import { bus } from '@/common/bus';
 import $ from 'jquery';
 import '@/common/jquery_tools';
-// import {
-//   bkBadge, bkButton, bkLink, bkCheckbox, bkCheckboxGroup, bkCol, bkCollapse,
-// bkCollapseItem, bkContainer, bkDatePicker,
-//   bkDialog, bkDropdownMenu, bkException, bkForm, bkFormItem, bkInfoBox, bkInput, bkLoading, bkMessage,
-//   bkNavigation, bkNavigationMenu, bkNavigationMenuItem, bkNotify, bkOption, bkOptionGroup, bkPagination,
-//   bkPopover, bkProcess, bkProgress, bkRadio, bkRadioGroup,
-//   bkRoundProgress, bkRow, bkSearchSelect, bkSelect, bkOverflowTips,
-//   bkSideslider, bkSlider, bkSteps, bkSwitcher, bkTab, bkTabPanel, bkTable, bkTableColumn, bkTagInput, bkTimePicker,
-//   bkTimeline, bkTransfer, bkTree, bkUpload, bkClickoutside,
-//   bkTooltips, bkSwiper, bkRate, bkAnimateNumber, bkVirtualScroll, bkPopconfirm, bkAlert, bkCard,
-//   bkTag } from 'bk-magic-vue';
-
 import { bkInfoBox, bkMessage, bkNotify } from 'bk-magic-vue';
 import moment from 'moment';
 import Clipboard from 'clipboard';
 import Directives from '@/directives';
 import '@/common/bkmagic.js';
-// eslint-disable-next-line
-import Blob from '@/common/Blob'
-// eslint-disable-next-line
-import Export2Excel from '@/common/Export2Excel'
 import PaasContentLoader from '@/components/loader';
 
 // 时间格式过滤器引入
@@ -58,103 +42,26 @@ import SmartTime from '@/components/filters/SmartTime';
 // import 'Extension/vex-js/sass/vex.sass';
 // import 'Extension/vex-js/sass/vex-theme-default.sass';
 import passLoading from '@/components/ui/LoadingSlot';
-
 import roundLoading from '@/components/round-loading';
 import tableEmpty from '@/components/ui/table-empty';
 import emptyDark from '@/components/ui/empty-dark';
-
 import i18n from '@/language/i18n';
 // 全量引入自定义图标
 import './assets/iconfont/style.css';
-
 // 平台配置
 import { PLATFORM_CONFIG } from '../static/json/paas_static.js';
-
 // 表头配置
 import { renderHeader } from '@/common/utils';
-
 // markdown样式
 import 'github-markdown-css';
-
 // 代码高亮
 import 'highlight.js/styles/github.css';
-
 // 功能依赖css
 import '@blueking/functional-dependency/vue2/vue2.css';
 
 window.$ = $;
 
 Vue.config.devtools = true;
-
-// components use
-// Vue.use(bkBadge);
-// Vue.use(bkButton);
-// Vue.use(bkLink);
-// Vue.use(bkCheckbox);
-// Vue.use(bkCheckboxGroup);
-// Vue.use(bkCol);
-// Vue.use(bkCollapse);
-// Vue.use(bkCollapseItem);
-// Vue.use(bkContainer);
-// Vue.use(bkDatePicker);
-// Vue.use(bkDialog, {
-//   headerPosition: 'left',
-// });
-// Vue.use(bkDropdownMenu);
-// Vue.use(bkException);
-// Vue.use(bkForm);
-// Vue.use(bkFormItem);
-// Vue.use(bkInput);
-// Vue.use(bkNavigation);
-// Vue.use(bkNavigationMenu);
-// Vue.use(bkNavigationMenuItem);
-// Vue.use(bkOption);
-// Vue.use(bkOptionGroup);
-// Vue.use(bkPagination);
-// Vue.use(bkPopover);
-// Vue.use(bkProcess);
-// Vue.use(bkProgress);
-// Vue.use(bkRadio);
-// Vue.use(bkRadioGroup);
-// Vue.use(bkRoundProgress);
-// Vue.use(bkRow);
-// Vue.use(bkSearchSelect);
-// Vue.use(bkSelect);
-// Vue.use(bkSideslider);
-// Vue.use(bkSlider);
-// Vue.use(bkSteps);
-// Vue.use(bkSwitcher);
-// Vue.use(bkTab);
-// Vue.use(bkOverflowTips);
-// Vue.use(bkTabPanel);
-// Vue.use(bkTable);
-// Vue.use(bkTableColumn, {
-//   showOverflowTooltip: true,
-// });
-// Vue.use(bkTagInput, {
-//   tooltipKey: 'name',
-// });
-// Vue.use(bkTimePicker);
-// Vue.use(bkTimeline);
-// Vue.use(bkTransfer, {
-//   showOverflowTips: true,
-// });
-// Vue.use(bkTree);
-// Vue.use(bkUpload);
-// Vue.use(bkSwiper);
-// Vue.use(bkRate);
-// Vue.use(bkAnimateNumber);
-// Vue.use(bkVirtualScroll);
-// Vue.use(bkPopconfirm);
-// // directives use
-// Vue.use(bkClickoutside);
-// Vue.use(bkTooltips);
-// Vue.use(bkLoading);
-// // Vue.use(bkOverflowTips)
-// Vue.use(bkAlert);
-// Vue.use(bkCard);
-// Vue.use(bkTag);
-
 Vue.use(Directives);
 Vue.component('PaasContentLoader', PaasContentLoader);
 Vue.component('PaasLoading', passLoading);

@@ -53,9 +53,6 @@ export default {
     };
   },
   computed: {
-    isGray() {
-      return ['myApplications', 'appLegacyMigration'].includes(this.$route.name);
-    },
     isBkNotice() {
       return this.$store.state.platformFeature.BK_NOTICE;
     },
@@ -74,9 +71,6 @@ export default {
     },
     sandboxPage() {
       return this.$route.meta?.sandboxPage;
-    },
-    paasVersion() {
-      return window.BK_PAAS_VERSION;
     },
     showPaasFooter() {
       return this.$route.meta?.isFooterShown;
