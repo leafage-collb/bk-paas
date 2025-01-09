@@ -132,6 +132,7 @@ export default {
   },
   methods: {
     handleTabChange(payload) {
+      console.log('BKANALYSIS', BKANALYSIS);
       if (window.NODE_ENV !== 'development') {
         const traceIdMap = {
           structured: 'StructuredLog',
