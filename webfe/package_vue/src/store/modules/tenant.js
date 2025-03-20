@@ -226,6 +226,13 @@ export default {
       return http.delete(url);
     },
     /**
+     * 获取服务下的方案
+     */
+    getPlansUnderService({}, { serviceId }) {
+      const url = `${BACKEND_URL}/api/plat_mgt/infras/services/${serviceId}/plans/`;
+      return http.get(url);
+    },
+    /**
      * 获取方案下的资源池
      */
     getPreCreatedInstances({}, { serviceId, planId }) {
@@ -252,6 +259,20 @@ export default {
     deleteResourcePool({}, { planId, id }) {
       const url = `${BACKEND_URL}/admin42/platform/pre-created-instances/${planId}/${id}/`;
       return http.delete(url);
+    },
+    /**
+     * 获取服务配置方案
+     */
+    getBindingPolicies({}, { serviceId }) {
+      const url = `${BACKEND_URL}/api/plat_mgt/infras/services/${serviceId}/binding-policies/`;
+      return http.get(url);
+    },
+    /**
+     * 更新配置方案
+     */
+    updateBindingPolicies({}, { serviceId, data }) {
+      const url = `${BACKEND_URL}/api/plat_mgt/infras/services/${serviceId}/binding-policies/`;
+      return http.put(url, data);
     },
   },
 };
