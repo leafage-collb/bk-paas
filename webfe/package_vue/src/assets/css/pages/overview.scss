@@ -93,7 +93,6 @@
 
 .overview-fright {
     min-height: 800px;
-    padding-bottom: 66px;
     position: relative;
     flex: 1;
     background: #F5F7FA;
@@ -102,8 +101,8 @@
     // border-left: solid 1px rgba(220, 222, 229, 0.6);
     
     .right-main {
-        padding-bottom: 20px;
         height: 100%;
+        overflow: auto;
     }
     h2 {
         font-size: 14px;
@@ -117,7 +116,6 @@
 }
 .overview-fright-plugin {
     min-height: 800px;
-    padding-bottom: 66px;
     position: relative;
     flex: 1;
     // border-left: solid 1px rgba(220, 222, 229, 0.6);

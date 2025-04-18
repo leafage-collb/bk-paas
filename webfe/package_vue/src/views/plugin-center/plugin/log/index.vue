@@ -105,3 +105,10 @@ export default {
 };
 </script>
 
+<style scoped lang="scss">
+.log-middle {
+  ::v-deep .bk-tab-section {
+    padding-bottom: 60px;
+  }
+}
+</style>

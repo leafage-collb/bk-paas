@@ -188,7 +188,7 @@ export default {
 .right-main {
   .visit-container {
     background: #fff;
-    margin: 20px 24px 0 24px;
+    margin: 16px 24px 24px 24px;
     padding-bottom: 20px;
     &.cloud-cls {
       background: #f5f7fa;

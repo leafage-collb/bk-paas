@@ -224,7 +224,7 @@ export default {
     styleObject() {
       if (this.isMinHeight) {
         return {
-          'min-height': this.localLoading && this.height ? `${this.height}px` : 'calc(100% - 50px)',
+          'min-height': this.localLoading && this.height ? `${this.height}px` : '0',
           ...this.customStyle,
         };
       }

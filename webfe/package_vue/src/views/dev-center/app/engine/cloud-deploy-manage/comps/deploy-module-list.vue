@@ -24,7 +24,7 @@
         </p>
       </div>
     </bk-alert>
-    <div v-if="deploymentInfoData.length">
+    <div class="card-module-list">
       <!-- 拖拽排序 -->
       <draggable
         v-model="deploymentInfoData"
@@ -664,7 +664,9 @@ export default {
 <style lang="scss" scoped>
 .deploy-module-content {
   height: 100%;
-  // min-height: 280px;
+  .card-module-list {
+    min-height: calc(100vh - 228px);
+  }
   .deploy-module-list.sortable-chosen {
     .main {
       background: #deeff9;

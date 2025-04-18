@@ -163,5 +163,8 @@ export default {
   .log-container {
     margin-bottom: 0;
   }
+  ::v-deep .bk-tab-section {
+    padding-bottom: 60px;
+  }
 }
 </style>

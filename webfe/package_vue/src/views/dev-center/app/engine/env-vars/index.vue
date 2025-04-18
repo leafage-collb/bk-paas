@@ -12,7 +12,7 @@
       :offset-top="20"
       class="app-container env-container"
     >
-      <section v-show="!isLoading">
+      <section>
         <div class="middle variable-main">
           <div
             v-if="isEdited && isReleased"

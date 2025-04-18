@@ -1,14 +1,14 @@
 <template lang="html">
-  <div class="overview-content" :style="{ background: customBackground.includes($route.name) ? '#FFF' : '#F5F7FA' }">
+  <div
+    class="overview-content"
+    :style="{ background: customBackground.includes($route.name) ? '#FFF' : '#F5F7FA' }"
+  >
     <template v-if="isPluginFound">
       <div class="wrap">
-        <div
-          class="overview-main"
-          :style="{ 'min-height': routeNameMap.includes($route.name) ? '0px' : `${minHeight}px` }"
-        >
+        <div class="overview-main">
           <div
             class="overview-fleft overview-fleft-plugin"
-            :style="{ 'top': `${isShowNotice ? GLOBAL.NOTICE_HEIGHT + 50 : 50}px` }"
+            :style="{ top: `${isShowNotice ? GLOBAL.NOTICE_HEIGHT + 50 : 50}px` }"
           >
             <plugin-quick-nav ref="quickNav" />
             <div
@@ -19,11 +19,13 @@
             </div>
           </div>
           <div
-            :class="['overview-fright-plugin',
-                     { 'hide-pd-bottom': $route.name === 'pluginVersionRelease' },
-                     { 'plugiun-highly-adaptive': $route.name === 'pluginVersionRelease' },
-                     { 'plugiun-test-stage': isTestStage },
-                     { 'plugiun-iframe-summary': isSummaryIframe }]"
+            :class="[
+              'overview-fright-plugin',
+              { 'hide-pd-bottom': $route.name === 'pluginVersionRelease' },
+              { 'plugiun-highly-adaptive': $route.name === 'pluginVersionRelease' },
+              { 'plugiun-test-stage': isTestStage },
+              { 'plugiun-iframe-summary': isSummaryIframe },
+            ]"
             @click="hideQuickNav"
           >
             <router-view
@@ -93,7 +95,6 @@ export default {
   mixins: [pluginBaseMixin],
   data() {
     return {
-      minHeight: 700,
       isPluginFound: true,
       navCategories: [],
       allNavItems: [],
@@ -235,15 +236,6 @@ export default {
     await this.initNavInfo();
   },
   mounted() {
-    // 通知中心高度
-    const NOTICE_HEIGHT = this.isShowNotice ? window.GLOBAL_CONFIG.NOTICE_HEIGHT : 0;
-    const HEADER_HEIGHT = 50;
-    const FOOTER_HEIGHT = 0;
-    const winHeight = window.innerHeight;
-    const contentHeight = winHeight - HEADER_HEIGHT - FOOTER_HEIGHT - NOTICE_HEIGHT;
-    if (contentHeight > this.minHeight) {
-      this.minHeight = contentHeight;
-    }
     document.body.className = 'ps-app-detail';
   },
   beforeDestroy() {
@@ -275,7 +267,7 @@ export default {
 .overview-main {
   height: 100%;
 }
-.app-container{
+.app-container {
   padding-top: 0;
 }
 
