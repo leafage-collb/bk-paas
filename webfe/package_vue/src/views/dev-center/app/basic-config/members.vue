@@ -17,14 +17,14 @@
             {{ $t('新增成员') }}
           </bk-button>
           <!-- 胶囊tab筛选 -->
-          <CustomRadioCapsule
+          <custom-radio-capsule
             class="mr12"
             :list="filterList"
             v-model="selectedRole"
             @change="handlerFilterChange"
           >
             <template slot-scope="{ item }">{{ `${item.label}（${item.count}）` }}</template>
-          </CustomRadioCapsule>
+          </custom-radio-capsule>
           <bk-button
             theme="primary"
             text
@@ -202,7 +202,7 @@
 import auth from '@/auth';
 import appBaseMixin from '@/mixins/app-base-mixin';
 import user from '@/components/user';
-import CustomRadioCapsule from '@/components/custom-radio-capsule';
+import CustomRadioCapsule from '@/components/custom-radio-capsule/index.vue';
 import { mapState } from 'vuex';
 import { paginationFun } from '@/common/utils';
 import MembersSideslider from './members-sideslider.vue';
