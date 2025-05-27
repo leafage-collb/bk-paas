@@ -283,4 +283,7 @@ export default {
   请输入特性名称: 'Please enter feature name',
   '请输入应用名称、ID': 'Please enter application name or ID',
   '修改后需要重新部署才能生效，并且需要手动清理原有集群中的进程。': 'Changes require redeployment to take effect and manual cleanup of processes in the original cluster.',
+  '共享 {m} 模块': 'Share {m} module',
+  '确认给 {m} 模块的预发布环境分配 {n} 增强服务实例': 'Confirm assigning {n} enhanced service instances to the pre-release environment of {m} module',
+  '确认删除 {m} 模块的{e} {n} 增强服务实例': 'Confirm deletion of {e} {n} enhanced service instances from {m} module',
 };
