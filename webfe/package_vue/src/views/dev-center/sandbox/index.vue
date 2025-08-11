@@ -2,7 +2,7 @@
   <div
     class="bk-apps-wrapper sandbox-container"
     :style="{
-      'padding-top': `${isShowNotice ? GLOBAL.NOTICE_HEIGHT + 50 : 50}px`,
+      'padding-top': `${isShowNotice ? GLOBAL.NOTICE_HEIGHT + 52 : 52}px`,
     }"
   >
     <section class="top-bar card-style">
@@ -813,6 +813,9 @@ export default {
   margin-left: 8px;
 }
 .sandbox-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: #f5f7fa;
   .fore {
     color: #313238;
@@ -874,6 +877,7 @@ export default {
       }
       &.collapse {
         margin-right: 0;
+        overflow-x: hidden;
         /deep/ .bk-resize-layout-aside {
           width: 0 !important;
         }
