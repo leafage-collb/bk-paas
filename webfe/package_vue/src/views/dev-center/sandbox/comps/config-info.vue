@@ -107,18 +107,10 @@
               @confirm="handleAddEnv"
               @hide="hidePopover"
             />
-            <bk-popconfirm
-              trigger="click"
-              width="288"
-              theme="del-tomato"
-              extCls="sandbox-env-popover-cls"
-              @confirm="handleDeleteEnv(item.key, index)"
-            >
-              <div slot="content">
-                <div class="content-text mb10">{{ $t('确认删除该环境变量？') }}</div>
-              </div>
-              <i class="paasng-icon paasng-delete ml10" />
-            </bk-popconfirm>
+            <i
+              class="paasng-icon paasng-delete ml10"
+              @click="showDeleteInfo(item.key, index)"
+            />
           </div>
         </li>
       </ul>
@@ -286,6 +278,15 @@ export default {
       await this.handleEnvAction('sandbox/sandboxDelEnv', { envVarKey }, this.$t('删除成功'));
     },
 
+    showDeleteInfo(envVarKey) {
+      this.$bkInfo({
+        title: this.$t('确认删除该环境变量？'),
+        confirmFn: () => {
+          this.handleDeleteEnv(envVarKey);
+        },
+      });
+    },
+
     // 获取增强服务
     async getSandboxAddonsServices() {
       try {
@@ -400,9 +401,6 @@ export default {
     padding: 0 !important;
     background-color: #2e2e2e !important;
     color: #979ba5 !important;
-  }
-  .tippy-tooltip.del-tomato-theme {
-    background-color: #3d3d3d !important;
   }
   .add-env-popover-content {
     padding-top: 16px;

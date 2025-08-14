@@ -29,6 +29,7 @@
         >
           <bk-input
             v-model="formData.value"
+            ref="valueInput"
             ext-cls="paas-custom-input-dark-cls"
           ></bk-input>
         </bk-form-item>
@@ -129,7 +130,8 @@ export default {
       }
       this.$nextTick(() => {
         setTimeout(() => {
-          this.$refs.keyInput?.focus();
+          const focusInput = this.type === 'edit' ? this.$refs.valueInput : this.$refs.keyInput;
+          focusInput?.focus();
         }, 100);
       });
     },
@@ -173,8 +175,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.add-env-popover-content .popover-body {
+  /deep/ .bk-form-item .bk-label {
+    color: #979ba5;
+  }
+}
 .cancel-popover-btn {
+  color: #f0f1f5;
   background-color: transparent;
-  color: #b3b3b3;
+  &:hover {
+    color: #dcdee5;
+    background-color: #242424;
+    border: 1px solid #4d4f56;
+  }
 }
 </style>
