@@ -16,42 +16,18 @@
  * to the current version of the project delivered to anyone in the future.
  */
 
+/**
+ * @file echarts 全局设置
+ */
+
+import Vue from 'vue';
+import VueECharts from 'vue-echarts';
 import echarts from '@/utils/echarts-compat';
 
-export default {
-  bind: (el, binding) => {
-    setTimeout(() => {
-      el.echartsInstance = echarts.init(el);
+// 注册 vue-echarts 组件
+Vue.component('v-chart', VueECharts);
 
-      if (binding.value) {
-        el.echartsInstance.setOption(binding.value);
-      }
+// 将 echarts 挂载到 Vue 原型上，以便在组件中使用
+Vue.prototype.$echarts = echarts;
 
-      el.resizeEventHandler = function () {
-        el.echartsInstance.resize();
-      };
-
-      if (window.attachEvent) {
-        window.attachEvent('onresize', el.resizeEventHandler);
-      } else {
-        window.addEventListener('resize', el.resizeEventHandler, false);
-      }
-    }, 1300);
-  },
-  update: (el, binding) => {
-    setTimeout(() => {
-      el.echartsInstance.setOption(binding.value);
-    }, 1300);
-  },
-  unbind: (el) => {
-    setTimeout(() => {
-      el.echartsInstance.dispose();
-      const _this = el;
-      if (window.attachEvent) {
-        window.detachEvent('onresize', _this.resizeEventHandler);
-      } else {
-        window.removeEventListener('resize', _this.resizeEventHandler, false);
-      }
-    }, 1300);
-  }
-};
+export default echarts;

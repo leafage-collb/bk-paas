@@ -95,9 +95,7 @@ import chartOption from '@/json/analysis-chart-option';
 import appTopBar from '@/components/paas-app-bar';
 import notEnginelessChartOption from '@/json/engineless-chart-option';
 import RenderSideslider from '../engine/analysis/comps/access-guide-sideslider.vue';
-import ECharts from 'vue-echarts/components/ECharts.vue';
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
+import ECharts from 'vue-echarts';
 import moment from 'moment';
 import { formatDate } from '@/common/tools';
 export default {

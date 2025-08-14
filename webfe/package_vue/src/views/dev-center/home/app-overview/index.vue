@@ -98,8 +98,8 @@
 import alertChartOption from '@/json/home-page-chart-option';
 import { formatDate } from '@/common/tools';
 import { bus } from '@/common/bus';
-import ECharts from 'vue-echarts/components/ECharts.vue';
-import echarts from 'echarts';
+import ECharts from 'vue-echarts';
+import echarts from '@/utils/echarts-compat';
 
 export default {
   name: 'HomeAppOverview',

@@ -698,9 +698,7 @@
 </template>
 
 <script>
-import ECharts from 'vue-echarts/components/ECharts.vue';
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
+import ECharts from 'vue-echarts';
 import tooltipConfirm from '@/components/ui/TooltipConfirm';
 import moment from 'moment';
 import chartOption from '@/json/instance-chart-option';

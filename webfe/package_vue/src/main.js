@@ -89,6 +89,9 @@ import '@blueking/bk-org-selector/vue2/vue2.css';
 // 用户 DisplayName 展示方案
 import BkUserDisplayName from '@blueking/bk-user-display-name';
 
+// 引入 echarts 设置
+import '@/utils/echarts-setup';
+
 window.$ = $;
 
 Vue.config.devtools = true;

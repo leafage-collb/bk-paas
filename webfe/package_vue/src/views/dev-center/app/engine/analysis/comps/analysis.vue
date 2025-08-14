@@ -280,9 +280,7 @@
 
 <script>import moment from 'moment';
 import appBaseMixin from '@/mixins/app-base-mixin';
-import ECharts from 'vue-echarts/components/ECharts.vue';
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
+import ECharts from 'vue-echarts';
 import RenderSideslider from './access-guide-sideslider';
 import chartOption from '@/json/analysis-chart-option';
 // eslint-disable-next-line

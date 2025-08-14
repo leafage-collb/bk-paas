@@ -536,7 +536,7 @@ import moment from 'moment';
 import appBaseMixin from '@/mixins/app-base-mixin';
 import sidebarDiffMixin from '@/mixins/sidebar-diff-mixin';
 import chartOption from '@/json/instance-chart-option';
-import ECharts from 'vue-echarts/components/ECharts.vue';
+import ECharts from 'vue-echarts';
 import scaleDialog from './scale-dialog';
 import i18n from '@/language/i18n.js';
 import { bus } from '@/common/bus';

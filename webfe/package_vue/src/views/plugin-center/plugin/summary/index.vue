@@ -171,9 +171,7 @@
 <script>
 import paasPluginTitle from '@/components/pass-plugin-title';
 import pluginBaseMixin from '@/mixins/plugin-base-mixin';
-import ECharts from 'vue-echarts/components/ECharts.vue';
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
+import ECharts from 'vue-echarts';
 import chartOption from '@/json/plugin-overview-options';
 import { formatDate } from '@/common/tools';
 import moment from 'moment';

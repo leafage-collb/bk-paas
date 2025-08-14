@@ -228,9 +228,7 @@ import appBaseMixin from '@/mixins/app-base-mixin';
 import appTopBar from '@/components/paas-app-bar';
 
 import moment from 'moment';
-import ECharts from 'vue-echarts/components/ECharts.vue';
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
+import ECharts from 'vue-echarts';
 import RenderSideslider from './comps/access-guide-sideslider';
 import chartOption from '@/json/analysis-chart-option';
 // eslint-disable-next-line

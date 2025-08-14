@@ -276,11 +276,7 @@
   </div>
 </template>
 <script>import _ from 'lodash';
-import ECharts from 'vue-echarts/components/ECharts.vue';
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
-import 'echarts/lib/component/markLine';
-import 'echarts/lib/component/markPoint';
+import ECharts from 'vue-echarts';
 import moment from 'moment';
 import chartOption from '@/json/alarm-record-chart-option';
 import i18n from '@/language/i18n';

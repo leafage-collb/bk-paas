@@ -314,9 +314,7 @@
 </template>
 
 <script>
-import ECharts from 'vue-echarts/components/ECharts.vue';
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
+import ECharts from 'vue-echarts';
 import overviewTopInfo from './comps/overview-top-info';
 import moment from 'moment';
 import chartOption from '@/json/process-chart-option';
