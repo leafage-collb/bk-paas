@@ -1,9 +1,4 @@
 const webpack = require('webpack');
-const path = require('path');
-const fs = require('fs');
-const dotenv = require('dotenv');
-const dotenv_expand = require('dotenv-expand');
-
 const PreTaskPlugin = require('./pre-task-plugin');
 
 const now = new Date();
@@ -12,7 +7,7 @@ const RELEASE_VERSION = [now.getFullYear(), '-', (now.getMonth() + 1), '-', now.
 module.exports = {
   host: process.env.BK_APP_HOST,  // bk-local中配置
   port: 6060, // 端口号
-  publicPath: process.env.BK_STATIC_URL?.includes('$') ? '/' : (process.env.BK_STATIC_URL || '/'),
+  publicPath: process.env.BK_STATIC_URL.includes('$') ? '/' : (process.env.BK_STATIC_URL || '/'),
   cache: true,
   open: true,
   replaceStatic: {
@@ -56,6 +51,12 @@ module.exports = {
       }]);
     config.plugin('preTaskPlugin')
       .use(new PreTaskPlugin());
+
+    // 配置 HtmlWebpackPlugin 的 inject 为 false
+    config.plugin('html').tap(args => {
+      args[0].inject = false;
+      return args;
+    });
 
     if (process.env.NODE_ENV === 'staging') {
       config.devtool('inline-source-map')

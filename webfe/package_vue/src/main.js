@@ -91,11 +91,17 @@ import '@blueking/bk-user-selector/vue2/vue2.css';
 import '@blueking/bk-org-selector/vue2/vue2.css';
 
 // 用户 DisplayName 展示方案
-import BkUserDisplayName from '@blueking/bk-user-display-name';
+// 延迟导入，避免 HMR 时重复注册自定义元素
+let BkUserDisplayName = null;
 
 window.$ = $;
 
 Vue.config.devtools = true;
+
+// 忽略自定义元素，避免 Vue 警告
+Vue.config.ignoredElements = [
+  'bk-user-display-name',
+];
 
 Vue.use(Directives);
 Vue.component('PaasContentLoader', PaasContentLoader);
@@ -175,14 +181,19 @@ auth.requestCurrentUser().then((user) => {
       components: {
         App,
       },
-      created() {
+      async created() {
         // 获取功能开头详情
         this.$store.dispatch('getUserFeature');
         this.$store.dispatch('getPlatformFeature');
-        BkUserDisplayName.configure({
-          tenantId: user.tenantId,
-          apiBaseUrl: window.BK_API_URL_TMPL?.replace('{api_name}', 'bk-user-web/prod'),
-        });
+        // 动态导入 BkUserDisplayName，避免 HMR 时重复注册自定义元素
+        if (!customElements.get('bk-user-display-name')) {
+          const module = await import('@blueking/bk-user-display-name');
+          BkUserDisplayName = module.default;
+          BkUserDisplayName.configure({
+            tenantId: user.tenantId,
+            apiBaseUrl: window.BK_API_URL_TMPL?.replace('{api_name}', 'bk-user-web/prod'),
+          });
+        }
       },
       template: '<App />',
     });
