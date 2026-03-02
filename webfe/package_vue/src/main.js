@@ -78,6 +78,9 @@ import '@blueking/bk-user-selector/vue2/vue2.css';
 // 多租户组织架构选择器样式
 import '@blueking/bk-org-selector/vue2/vue2.css';
 
+// 防止 CustomElement 重复注册报错（需在 bk-user-display-name 之前执行）
+import './common/custom-elements-polyfill';
+
 // 用户 DisplayName 展示方案
 import BkUserDisplayName from '@blueking/bk-user-display-name';
 
