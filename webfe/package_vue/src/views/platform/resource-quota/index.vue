@@ -45,17 +45,22 @@
         :width="200"
       >
         <template slot-scope="{ row }">
-          <span v-bk-tooltips="builtinTooltipConfig(row)">
-            <bk-button
-              theme="primary"
-              text
-              class="mr10"
-              @click="handleEdit(row)"
-              :disabled="row.is_builtin"
-            >
-              {{ $t('编辑') }}
-            </bk-button>
-          </span>
+          <bk-button
+            theme="primary"
+            text
+            class="mr10"
+            @click="handleViewAffectedInstances(row)"
+          >
+            {{ $t('查看实例') }}
+          </bk-button>
+          <bk-button
+            theme="primary"
+            text
+            class="mr10"
+            @click="handleEdit(row)"
+          >
+            {{ $t('编辑') }}
+          </bk-button>
           <span v-bk-tooltips="builtinTooltipConfig(row)">
             <bk-button
               theme="primary"
@@ -71,35 +76,104 @@
     </bk-table>
 
     <!-- 添加/编辑方案侧边栏 -->
-    <quota-plan-sideslider
+    <QuotaPlanSideslider
       :visible.sync="showPlanSideslider"
       :edit-data="currentEditData"
       :cpu-options="cpuOptions"
       :memory-options="memoryOptions"
       @success="getResourceQuotaList"
     />
+
+    <!-- 查看实例侧边栏 -->
+    <AffectedInstancesSideslider
+      :visible.sync="showAffectedInstancesSideslider"
+      :quota-plan="currentQuotaPlan"
+    />
+
+    <!-- 无法删除方案 Dialog -->
+    <bk-dialog
+      v-model="showCannotDeleteDialog"
+      :title="$t('无法删除方案')"
+      :width="560"
+      :mask-close="false"
+      :show-footer="false"
+      :close-icon="true"
+      @closed="handleCannotDeleteDialogClosed"
+    >
+      <div class="cannot-delete-dialog-content">
+        <p
+          class="cannot-delete-desc"
+          v-dompurify-html="deleteTips"
+        ></p>
+        <div class="cannot-delete-table-wrapper">
+          <AffectedInstancesTable
+            v-if="showCannotDeleteDialog"
+            :quota-plan-id="cannotDeleteState.planId"
+            :initial-instances="cannotDeleteState.instances"
+            :initial-count="cannotDeleteState.totalCount"
+            @count-change="handleCannotDeleteCountChange"
+          />
+        </div>
+        <div class="cannot-delete-footer">
+          <bk-button
+            theme="default"
+            @click="showCannotDeleteDialog = false"
+          >
+            {{ $t('关闭') }}
+          </bk-button>
+        </div>
+      </div>
+    </bk-dialog>
   </div>
 </template>
 
 <script>
 import QuotaPlanSideslider from './quota-plan-sideslider.vue';
+import AffectedInstancesSideslider from './affected-instances-sideslider.vue';
+import AffectedInstancesTable from './affected-instances-table.vue';
+
+const DEFAULT_PAGINATION = {
+  current: 1,
+  count: 0,
+  // 删除拦截弹窗默认展示 5 条，预检查请求也保持同样的分页大小。
+  limit: 5,
+  limitList: [5, 10, 20, 50, 100],
+};
+
+const createPagination = (overrides = {}) => ({
+  ...DEFAULT_PAGINATION,
+  ...overrides,
+});
+
+const createCannotDeleteState = () => ({
+  planId: null,
+  planName: '',
+  instances: [],
+  totalCount: 0,
+});
 
 export default {
   name: 'ResourceQuota',
   components: {
     QuotaPlanSideslider,
+    AffectedInstancesSideslider,
+    AffectedInstancesTable,
   },
   data() {
     return {
-      isLoading: false,
       showPlanSideslider: false,
+      showAffectedInstancesSideslider: false,
       currentEditData: null,
+      currentQuotaPlan: {},
       displayTemplateList: [],
       isTableLoading: false,
       cpuOptions: [],
       memoryOptions: [],
       // 用于记录正在更新状态的方案 ID（使用对象实现响应式）
       updatingActiveIds: {},
+      // 无法删除方案 Dialog 相关状态
+      showCannotDeleteDialog: false,
+      cannotDeleteState: createCannotDeleteState(),
     };
   },
   computed: {
@@ -139,6 +213,12 @@ export default {
         disabled: !row.is_builtin,
       });
     },
+    deleteTips() {
+      return this.$t('方案（{name}）正被以下 <i>{count}</i> 个应用、模块使用：', {
+        name: this.cannotDeleteState.planName,
+        count: this.cannotDeleteState.totalCount,
+      });
+    },
   },
   created() {
     this.init();
@@ -176,21 +256,16 @@ export default {
     // 获取单元格值(支持嵌套属性)
     getCellValue(row, prop) {
       if (!prop) return '';
-      // 支持嵌套属性,如 'limits.cpu'
-      const keys = prop.split('.');
-      let value = row;
-      for (const key of keys) {
+      // 支持列配置中的嵌套属性，如 'limits.cpu'。
+      return prop.split('.').reduce((value, key) => {
         if (value && typeof value === 'object') {
-          value = value[key];
-        } else {
-          return '';
+          return value[key];
         }
-      }
-      return value;
+        return '';
+      }, row);
     },
     // 获取资源方案列表
     async getResourceQuotaList() {
-      this.isLoading = true;
       this.isTableLoading = true;
       try {
         const res = await this.$store.dispatch('tenantConfig/getQuotaPlans');
@@ -198,7 +273,6 @@ export default {
       } catch (e) {
         this.catchErrorHandler(e);
       } finally {
-        this.isLoading = false;
         this.isTableLoading = false;
       }
     },
@@ -212,8 +286,63 @@ export default {
       this.currentEditData = { ...row };
       this.showPlanSideslider = true;
     },
-    // 删除弹窗确认
-    handleDelete(row) {
+    // 查看资源方案影响的实例
+    handleViewAffectedInstances(row) {
+      this.currentQuotaPlan = { ...row };
+      this.showAffectedInstancesSideslider = true;
+    },
+    buildQuotaPlanPayload(row, isActive) {
+      return {
+        name: row.name,
+        limits: {
+          cpu: row.limits.cpu,
+          memory: row.limits.memory,
+        },
+        requests: {
+          cpu: row.requests.cpu,
+          memory: row.requests.memory,
+        },
+        is_active: isActive,
+      };
+    },
+    fetchQuotaPlanUsedBy(planId, pagination = createPagination()) {
+      const { current, limit } = pagination;
+      return this.$store.dispatch('tenantConfig/getResQuotaPlanUsedBy', {
+        id: planId,
+        queryParams: {
+          limit,
+          offset: limit * (current - 1),
+        },
+      });
+    },
+    openCannotDeleteDialog(row, res) {
+      const totalCount = res.count || 0;
+      this.cannotDeleteState = {
+        planId: row.id,
+        planName: row.name,
+        instances: res.results || [],
+        totalCount,
+      };
+      this.showCannotDeleteDialog = true;
+    },
+    // 删除弹窗确认（先检查引用）
+    async handleDelete(row) {
+      try {
+        // 删除前先查引用：有绑定实例时展示明细，避免用户删除后才收到后端错误。
+        const res = await this.fetchQuotaPlanUsedBy(row.id);
+        const totalCount = res.count || 0;
+        if (totalCount > 0) {
+          this.openCannotDeleteDialog(row, res);
+        } else {
+          // 无引用，保持原有删除确认流程
+          this.showDeleteConfirm(row);
+        }
+      } catch (e) {
+        this.catchErrorHandler(e);
+      }
+    },
+    // 原有删除确认弹窗
+    showDeleteConfirm(row) {
       const h = this.$createElement;
       this.$bkInfo({
         title: this.$t('是否删除该项目方案？'),
@@ -229,6 +358,13 @@ export default {
           await this.deleteQuotaPlan(row);
         },
       });
+    },
+    // 无法删除方案 Dialog 关闭时清空数据
+    handleCannotDeleteDialogClosed() {
+      this.cannotDeleteState = createCannotDeleteState();
+    },
+    handleCannotDeleteCountChange(count) {
+      this.cannotDeleteState.totalCount = count;
     },
     // 删除资源方案
     async deleteQuotaPlan(row) {
@@ -270,23 +406,10 @@ export default {
       // 添加到更新中的对象，禁用开关
       this.$set(this.updatingActiveIds, row.id, true);
       try {
-        // 构建更新数据：只变更 is_active，其他参数保持不变
-        const payload = {
-          name: row.name,
-          limits: {
-            cpu: row.limits.cpu,
-            memory: row.limits.memory,
-          },
-          requests: {
-            cpu: row.requests.cpu,
-            memory: row.requests.memory,
-          },
-          is_active: value,
-        };
-
+        // 后端更新方案需要完整资源配置，这里只变更启停状态并保留原有配额值。
         await this.$store.dispatch('tenantConfig/updateQuotaPlan', {
           id: row.id,
-          data: payload,
+          data: this.buildQuotaPlanPayload(row, value),
         });
 
         this.$paasMessage({
@@ -295,7 +418,7 @@ export default {
         });
       } catch (e) {
         // 更新失败，回滚状态
-        row.is_active = !value;
+        this.$set(row, 'is_active', !value);
         this.catchErrorHandler(e);
       } finally {
         // 从更新中的对象移除，恢复开关
@@ -313,6 +436,21 @@ export default {
     text-decoration: underline;
     text-decoration-style: dashed;
     text-underline-position: under;
+  }
+}
+.cannot-delete-dialog-content {
+  .cannot-delete-desc {
+    margin-bottom: 16px;
+    font-size: 14px;
+    /deep/ i {
+      font-style: normal;
+      color: #ea3636;
+    }
+  }
+  .cannot-delete-footer {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
   }
 }
 </style>

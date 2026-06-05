@@ -20,6 +20,7 @@
  * 平台管理-配置管理
  */
 import http from '@/api';
+import { json2Query } from '@/common/tools';
 
 export default {
   namespaced: true,
@@ -182,6 +183,13 @@ export default {
      */
     getProcessQuotaPlans() {
       const url = `${BACKEND_URL}/api/plat_mgt/processes/quota_plans/`;
+      return http.get(url);
+    },
+    /**
+     * 获取配额方案影响实例数
+     */
+    getResQuotaPlanUsedBy({}, { id, queryParams }) {
+      const url = `${BACKEND_URL}/api/plat_mgt/res_quota_plans/${id}/used_by/?${json2Query(queryParams)}`;
       return http.get(url);
     },
     /**

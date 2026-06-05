@@ -439,4 +439,5 @@ export default {
   生成时间: 'Created At',
   已使用: 'Used',
   未使用: 'Unused',
+  '方案（{name}）正被以下 <i>{count}</i> 个应用、模块使用：': 'Plan ({name}) is used by the following <i>{count}</i> apps/modules:'
 };
