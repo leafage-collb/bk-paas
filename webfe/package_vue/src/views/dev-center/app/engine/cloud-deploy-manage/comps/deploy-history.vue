@@ -196,6 +196,7 @@
       ref="logSidesliderRef"
       :app-code="appCode"
       :module-id="moduleValue"
+      @redeploy="handleRedeploy"
     />
 
     <!-- 查看YAML -->
@@ -515,6 +516,19 @@ export default {
      */
     handleShowLogSideslider(row) {
       this.$refs.logSidesliderRef?.handleShowLog(row);
+    },
+
+    // 重新部署
+    handleRedeploy(row) {
+      this.$router.push({
+        name: row.environment === 'prod' ? 'cloudAppDeployManageProd' : 'cloudAppDeployManageStag',
+        params: {
+          id: this.appCode,
+          isShowDeploy: true,
+          deployModuleId: row.moduleName,
+          filterModule: row.moduleName,
+        },
+      });
     },
 
     /**
