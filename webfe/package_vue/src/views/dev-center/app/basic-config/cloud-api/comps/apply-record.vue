@@ -661,7 +661,7 @@ export default {
       return '--';
     },
 
-    handleDateChange(date, type) {
+    handleDateChange(date) {
       this.dateRange = {
         startTime: `${date[0]} 00:00:00`,
         endTime: `${date[1]} 23:59:59`,
@@ -670,7 +670,7 @@ export default {
       this.fetchList();
     },
 
-    handleSelect(value, option) {
+    handleSelect() {
       this.resetPagination();
       this.fetchList();
       this.$nextTick(() => {
@@ -690,7 +690,7 @@ export default {
       this.fetchList();
     },
 
-    limitChange(currentLimit, prevLimit) {
+    limitChange(currentLimit) {
       this.pagination.limit = currentLimit;
       this.pagination.current = 1;
       this.fetchList();
@@ -797,10 +797,10 @@ export default {
           keyword,
           tenantId: this.tenantId,
         });
-        return data.map(({ login_name, bk_username, ...rest }) => ({
+        return data.map(({ login_name: loginName, bk_username: bkUsername, ...rest }) => ({
           ...rest,
-          name: login_name,
-          id: bk_username,
+          name: loginName,
+          id: bkUsername,
         }));
       } catch {
         return [];
