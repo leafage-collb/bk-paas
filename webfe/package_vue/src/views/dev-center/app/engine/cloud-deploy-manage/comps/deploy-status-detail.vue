@@ -28,7 +28,9 @@
                 <span v-if="deploymentInfo.version_info.version_type === 'branch'">
                   <span class="version-text pl10">
                     {{ $t('版本：') }}
-                    {{ deploymentInfo.version_info.revision ? deploymentInfo.version_info.revision.substring(0, 8) : '--' }}
+                    {{ deploymentInfo.version_info.revision
+                      ? deploymentInfo.version_info.revision.substring(0, 8)
+                      : '--' }}
                   </span>
                   <span class="branch-text pl30">
                     {{ $t('分支：') }}
@@ -1013,7 +1015,8 @@ export default {
           if (data.object.module_name !== this.curModuleId) return; // 更新当前模块的进程
           this.updateProcessData(data);
         } else if (data.object_type === 'instance') {
-          if (data.object.module_name !== this.curModuleId || data.object.version !== this.releaseId) return; // 更新当前模块的进程且是当前版本
+          // 仅更新当前模块的当前版本进程
+          if (data.object.module_name !== this.curModuleId || data.object.version !== this.releaseId) return;
           this.updateInstanceData(data);
           // if (data.type === 'ADDED') {
           //   if (data.object.module_name !== this.curModuleId) return;   // 更新当前模块的进程
