@@ -96,11 +96,11 @@ export default {
   },
   props: {
     appCode: {
-      type: String | Number,
+      type: [String, Number],
       default: '',
     },
     moduleId: {
-      type: String | Number,
+      type: [String, Number],
       default: '',
     },
   },
@@ -316,7 +316,7 @@ export default {
         return false;
       }
 
-      const { operator, created: time, moduleName, environment, operation_type } = row;
+      const { operator, created: time, moduleName, environment, operation_type: operationType } = row;
 
       // 构建标题信息
       const titleInfo = this.buildLogTitleInfo({
@@ -324,12 +324,12 @@ export default {
         environment,
         operator: operator.username,
         time,
-        logType: operation_type,
+        logType: operationType,
       });
 
       this.setSidesliderTitle(titleInfo);
 
-      if (operation_type === 'offline') {
+      if (operationType === 'offline') {
         this.curDeployLog = row.logDetail;
       } else {
         this.getDeployTimeline(row);

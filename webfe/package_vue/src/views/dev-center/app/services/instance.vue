@@ -407,13 +407,6 @@ export default {
   computed: {
     ...mapState(['localLanguage', 'userFeature']),
     compiledMarkdown() {
-      this.$nextTick(() => {
-        $('#markdown')
-          .find('a')
-          .each(function () {
-            $(this).attr('target', '_blank');
-          });
-      });
       return marked(this.serviceMarkdown);
     },
     region() {
@@ -481,7 +474,22 @@ export default {
     }
     next();
   },
+  mounted() {
+    this.setMarkdownLinkTarget();
+  },
+  updated() {
+    this.setMarkdownLinkTarget();
+  },
   methods: {
+    setMarkdownLinkTarget() {
+      this.$nextTick(() => {
+        $('#markdown')
+          .find('a')
+          .each(function () {
+            $(this).attr('target', '_blank');
+          });
+      });
+    },
     async fetchServicesShareDetail() {
       try {
         const res = await this.$store.dispatch('service/getServicesShareDetail', {
