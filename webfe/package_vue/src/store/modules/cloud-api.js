@@ -244,7 +244,7 @@ export default {
       return http.get(url);
     },
 
-     /**
+    /**
      * MCP-获取申请记录
      */
     getMcpServerApplyRecords({}, { appCode, ...requsetParams }) {

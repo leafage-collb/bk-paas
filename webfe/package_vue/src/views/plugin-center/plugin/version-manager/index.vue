@@ -766,13 +766,13 @@ export default {
             this.$t('当前版本'),
             row.version,
             row.source_hash.slice(0, 8),
-            `${location}/commit/${row.source_hash}`
+            `${location}/commit/${row.source_hash}`,
           ),
           this.createVersionInfo(
             this.$t('回滚至版本'),
             rollback.version,
             rollback.source_hash.slice(0, 8),
-            `${location}/commit/${rollback.source_hash}`
+            `${location}/commit/${rollback.source_hash}`,
           ),
         ]),
         okText: this.$t('回滚'),
@@ -800,7 +800,7 @@ export default {
                 click: fn,
               },
             },
-            hash
+            hash,
           ),
         ]),
       ]);
@@ -859,10 +859,10 @@ export default {
     showToRelease(row) {
       // 测试成功并且分支为 master，展示去发布快捷入口
       return (
-        this.curPluginInfo.has_test_version &&
-        !this.isOfficialVersion &&
-        row.status === 'successful' &&
-        row.source_version_name === 'master'
+        this.curPluginInfo.has_test_version
+        && !this.isOfficialVersion
+        && row.status === 'successful'
+        && row.source_version_name === 'master'
       );
     },
   },
