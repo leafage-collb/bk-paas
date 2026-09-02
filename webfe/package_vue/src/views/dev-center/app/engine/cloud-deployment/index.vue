@@ -169,7 +169,7 @@ export default {
       return this.loaderPlaceholder === 'table-loading' ? { operationCount: 1 } : {};
     },
     routerRefs() {
-      const curPenel = this.panels.find((e) => e.name === this.active);
+      const curPenel = this.panels.find(e => e.name === this.active);
       return curPenel ? curPenel.ref : 'process';
     },
     curAppModuleList() {
@@ -194,9 +194,9 @@ export default {
     // 是否显示高级别提示icon
     isGcsMysqlAlertIcon() {
       return (
-        this.isGcsMysqlService &&
-        this.userFeature.APP_AVAILABILITY_LEVEL &&
-        this.curAppInfo.application?.extra_info?.availability_level === 'premium'
+        this.isGcsMysqlService
+        && this.userFeature.APP_AVAILABILITY_LEVEL
+        && this.curAppInfo.application?.extra_info?.availability_level === 'premium'
       );
     },
   },
@@ -217,7 +217,7 @@ export default {
     },
   },
   created() {
-    this.active = this.panels.find((e) => e.ref === this.$route.meta.module)?.name || this.firstTabActiveName;
+    this.active = this.panels.find(e => e.ref === this.$route.meta.module)?.name || this.firstTabActiveName;
     // 默认第一项
     if (this.$route.name !== this.firstTabActiveName) {
       this.$router.push({
@@ -233,7 +233,7 @@ export default {
   },
   methods: {
     handleGoPage(routeName) {
-      const label = this.panels.find((item) => item.name === routeName).label;
+      const label = this.panels.find(item => item.name === routeName).label;
       this.sendEventTracking({ id: traceIds[label], action: 'view', category: this.categoryText });
       this.$store.commit('cloudApi/updatePageEdit', false); // 切换tab 页面应为查看页面
       this.active = routeName;
@@ -323,12 +323,10 @@ export default {
         const { bound = [], shared = [], unbound = [] } = response;
 
         // 检查是否存在 RISK_SERVER
-        const containsRiskServer = (list, key = 'service') =>
-          list.some((item) => (key === 'service' ? item?.service?.name : item.name) === RISK_SERVER);
+        const containsRiskServer = (list, key = 'service') => list.some(item => (key === 'service' ? item?.service?.name : item.name) === RISK_SERVER);
 
         // 包含 gcs_mysql 服务，添加风险icon提示
-        this.isGcsMysqlService =
-          containsRiskServer(bound) || containsRiskServer(shared) || containsRiskServer(unbound, 'unbound');
+        this.isGcsMysqlService =          containsRiskServer(bound) || containsRiskServer(shared) || containsRiskServer(unbound, 'unbound');
       } catch (error) {
         this.isGcsMysqlService = false;
       }

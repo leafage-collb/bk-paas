@@ -489,7 +489,7 @@ export default {
     },
     getVersionValue() {
       return function (name, data) {
-        const versionData = data.find((e) => e.name === name) || {};
+        const versionData = data.find(e => e.name === name) || {};
         return versionData?.value || '';
       };
     },
@@ -555,7 +555,7 @@ export default {
         this.pagination.count = this.tableList.length;
 
         // 处理服务->数据存储服务详情跳转
-        const redirectData = this.tableList.find((v) => v.uuid === this.$route.params?.service);
+        const redirectData = this.tableList.find(v => v.uuid === this.$route.params?.service);
         if (redirectData) {
           this.handleToPage(redirectData);
         }
@@ -719,7 +719,7 @@ export default {
             message: res.detail,
           });
           this.delAppDialog.visiable = false;
-        }
+        },
       );
     },
 
@@ -857,9 +857,7 @@ export default {
           });
         });
         this.instanceList = res;
-        this.recyclingCount = res.reduce((accumulator, currentItem) => {
-          return accumulator + currentItem.count;
-        }, 0);
+        this.recyclingCount = res.reduce((accumulator, currentItem) => accumulator + currentItem.count, 0);
       } catch (e) {
         this.catchErrorHandler(e);
       } finally {
@@ -869,9 +867,9 @@ export default {
     // 是否展示GcsMysql警告提示
     hasGcsMysqlAlert(name) {
       return (
-        name === 'gcs_mysql' &&
-        this.userFeature.APP_AVAILABILITY_LEVEL &&
-        this.curAppInfo.application?.extra_info?.availability_level === 'premium'
+        name === 'gcs_mysql'
+        && this.userFeature.APP_AVAILABILITY_LEVEL
+        && this.curAppInfo.application?.extra_info?.availability_level === 'premium'
       );
     },
   },

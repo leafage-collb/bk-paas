@@ -239,7 +239,7 @@ export default {
       }
       // 触发 CPU Request 校验
       this.$refs.formRef?.validateField('cpu_request').catch((e) => {
-        console.error(`Validation error on field:`, e);
+        console.error('Validation error on field:', e);
       });
     },
     'formData.memory_limit'() {
@@ -248,7 +248,7 @@ export default {
       }
       // 触发内存 Request 校验
       this.$refs.formRef?.validateField('memory_request').catch((e) => {
-        console.error(`Validation error on field:`, e);
+        console.error('Validation error on field:', e);
       });
     },
   },

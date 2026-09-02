@@ -598,7 +598,7 @@ export default {
   },
   computed: {
     curAppModule() {
-      return this.curAppModuleList.find((e) => e.name === (this.deploymentInfoBackUp.module_name || 'default'));
+      return this.curAppModuleList.find(e => e.name === (this.deploymentInfoBackUp.module_name || 'default'));
     },
     branchEmptyText() {
       const sourceType = this.overview.repo && this.overview.repo.source_type;
@@ -757,7 +757,7 @@ export default {
     // 获取第一个匹配的错误数据
     getFirstErrorData(errorStates) {
       const failedConditions = this.deployPreparations.failed_conditions || [];
-      const errorList = failedConditions.find((v) => errorStates.includes(v.action_name));
+      const errorList = failedConditions.find(v => errorStates.includes(v.action_name));
       return errorList || {};
     },
     setCurData() {
@@ -835,7 +835,7 @@ export default {
           };
 
           // 组装数据，实现分组
-          if (!branchesList.map((item) => item.id).includes(branch.type)) {
+          if (!branchesList.map(item => item.id).includes(branch.type)) {
             branchesList.push({
               id: branch.type,
               name: branch.type,
@@ -843,7 +843,7 @@ export default {
               children: [obj],
             });
           } else {
-            const curData = branchesList.find((item) => item.id === branch.type);
+            const curData = branchesList.find(item => item.id === branch.type);
             curData.children.push(obj);
           }
 
@@ -1251,7 +1251,7 @@ export default {
           };
 
           Object.keys(errorTypes).forEach((type) => {
-            const errorList = ret.failed_conditions.filter((v) => errorTypes[type].includes(v.action_name));
+            const errorList = ret.failed_conditions.filter(v => errorTypes[type].includes(v.action_name));
             this.isShowErrorAlert[type] = errorList.length > 0;
           });
         } else {

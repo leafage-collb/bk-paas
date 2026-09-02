@@ -164,9 +164,9 @@
                   @click="handleOfflineApp(deploymentInfo)"
                   :disabled="
                     !!deploymentInfo.state.offline.pending ||
-                    !!deploymentInfo.state.deployment.pending ||
-                    !deploymentInfo.state.deployment.latest ||
-                    deploymentInfo.state.offline.latest_succeeded
+                      !!deploymentInfo.state.deployment.pending ||
+                      !deploymentInfo.state.deployment.latest ||
+                      deploymentInfo.state.offline.latest_succeeded
                   "
                   :loading="!!deploymentInfo.state.offline.pending"
                 >
@@ -355,7 +355,7 @@ export default {
       if (value === this.$t('全部模块') || value === '') {
         this.deploymentInfoData = this.deploymentInfoDataBackUp;
       } else {
-        this.deploymentInfoData = this.deploymentInfoDataBackUp.filter((module) => module.module_name === value);
+        this.deploymentInfoData = this.deploymentInfoDataBackUp.filter(module => module.module_name === value);
       }
     },
     isWatchOfflineing(newVal, oldVal) {
@@ -404,12 +404,12 @@ export default {
         this.currentAllExpandedItems.push(payload.module_name);
         this.handleRefresh();
       } else {
-        this.currentAllExpandedItems = this.currentAllExpandedItems.filter((name) => name !== payload.module_name);
+        this.currentAllExpandedItems = this.currentAllExpandedItems.filter(name => name !== payload.module_name);
       }
       this.curDeploymentInfoItem = payload || {};
 
       // 模块列表展开/收起，同步外界状态
-      const allCollapsed = this.deploymentInfoData.every((item) => !item.isExpand);
+      const allCollapsed = this.deploymentInfoData.every(item => !item.isExpand);
       this.$emit('expand', allCollapsed);
     },
 
@@ -501,7 +501,7 @@ export default {
         this.$nextTick(() => {
           this.$set(this, 'deploymentInfoData', res.data);
           if (this.modelName && this.modelName !== this.$t('全部模块')) {
-            this.deploymentInfoData = this.deploymentInfoData.filter((module) => module.module_name === this.modelName);
+            this.deploymentInfoData = this.deploymentInfoData.filter(module => module.module_name === this.modelName);
           }
         });
         this.rvData = {
@@ -509,8 +509,8 @@ export default {
           rvProc: res.rv_proc,
         };
         this.deploymentInfoDataBackUp = cloneDeep(res.data);
-        const hasOfflinedData = res.data.filter((e) => e.state.offline.pending) || []; // 有正在下架的数据
-        const hasDeployData = res.data.filter((e) => e.state.deployment.pending) || []; // 有正在部署的数据
+        const hasOfflinedData = res.data.filter(e => e.state.offline.pending) || []; // 有正在下架的数据
+        const hasDeployData = res.data.filter(e => e.state.deployment.pending) || []; // 有正在部署的数据
         this.isWatchOfflineing = !!hasOfflinedData.length; // 如果还存在下架中的数据，这说明还有模块在下架中
         this.isWatctDeploying = !!hasDeployData.length;
         if (hasOfflinedData.length || hasDeployData.length) {
@@ -645,7 +645,7 @@ export default {
 
     // 获取当前模块列表名称序列
     getModuleSequence(moduleList) {
-      return moduleList.map((item) => item.module_name);
+      return moduleList.map(item => item.module_name);
     },
 
     // 获取部署管理模块顺序
@@ -666,12 +666,10 @@ export default {
       try {
         this.curModuleSequence = this.getModuleSequence(this.deploymentInfoData);
         const data = {
-          module_orders: this.curModuleSequence.map((n, index) => {
-            return {
-              module_name: n,
-              order: index + 1,
-            };
-          }),
+          module_orders: this.curModuleSequence.map((n, index) => ({
+            module_name: n,
+            order: index + 1,
+          })),
         };
         await this.$store.dispatch('deploy/updateModuleOrder', {
           appCode: this.appCode,
@@ -687,7 +685,7 @@ export default {
       if (!this.isShowDeploymentDialog || this.isDeployEnvVarChange) return;
       this.isDeployEnvVarChange = true;
       const deployModleId = this.$route.params.deployModuleId;
-      const deployIndex = this.deploymentInfoData.findIndex((item) => item.module_name === deployModleId);
+      const deployIndex = this.deploymentInfoData.findIndex(item => item.module_name === deployModleId);
       if (deployIndex !== -1) {
         const additionalData = this.isSmartApp ? { activeImagePullPolicy: 'Always' } : { activeImageSource: 'image' };
         const deployData = {

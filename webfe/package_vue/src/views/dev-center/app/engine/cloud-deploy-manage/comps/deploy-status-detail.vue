@@ -307,12 +307,11 @@ export default {
   },
   computed: {
     curDeployStage() {
-      const flag =
-        this.isWatchDeploying ||
-        this.isDeploySuccess ||
-        this.isDeployFail ||
-        this.isDeployInterrupted ||
-        this.isDeployInterrupting;
+      const flag =        this.isWatchDeploying
+        || this.isDeploySuccess
+        || this.isDeployFail
+        || this.isDeployInterrupted
+        || this.isDeployInterrupting;
       return flag ? 'deploy' : 'noDeploy';
     },
     curModuleId() {
@@ -355,14 +354,13 @@ export default {
     this.ansiUp = new AU.default();
 
     window.addEventListener('scroll', () => {
-      this.isScrollFixed =
-        (this.isWatchDeploying ||
-          this.isWatchOfflineing ||
-          this.isDeploySuccess ||
-          this.isDeployFail ||
-          this.isDeployInterrupted ||
-          this.isDeployInterrupting) &&
-        window.pageYOffset >= 260;
+      this.isScrollFixed =        (this.isWatchDeploying
+          || this.isWatchOfflineing
+          || this.isDeploySuccess
+          || this.isDeployFail
+          || this.isDeployInterrupted
+          || this.isDeployInterrupting)
+        && window.pageYOffset >= 260;
     });
 
     window.addEventListener('resize', () => {
@@ -464,8 +462,8 @@ export default {
             this.isDeployInterrupting = false;
           }
           this.$nextTick(() => {
-            this.$refs.deployTimelineRef &&
-              this.$refs.deployTimelineRef.editNodeStatus(item.name, item.status, content);
+            this.$refs.deployTimelineRef
+              && this.$refs.deployTimelineRef.editNodeStatus(item.name, item.status, content);
           });
         });
 
@@ -499,8 +497,8 @@ export default {
           }
           this.$nextTick(() => {
             // eslint-disable-next-line max-len
-            this.$refs.deployTimelineRef &&
-              this.$refs.deployTimelineRef.editNodeStatus(item.name, item.status, content);
+            this.$refs.deployTimelineRef
+              && this.$refs.deployTimelineRef.editNodeStatus(item.name, item.status, content);
           });
           this.$refs.deployTimelineRef && this.$refs.deployTimelineRef.$forceUpdate();
         });
@@ -548,7 +546,7 @@ export default {
             }
             this.getDeployResult(deployId);
           },
-          false
+          false,
         );
 
         // 监听到部署slider title变化
@@ -557,7 +555,7 @@ export default {
           (event) => {
             this.curDeployResult.title = event.data;
           },
-          true
+          true,
         );
       }
     },
@@ -679,9 +677,9 @@ export default {
       const res = await this.$store.dispatch('entryConfig/getEntryDataList', {
         appCode: this.appCode,
       });
-      const curModuleInfo = res.find((e) => e.name === this.curModuleId);
+      const curModuleInfo = res.find(e => e.name === this.curModuleId);
       const curDatabase = curModuleInfo?.envs[this.environment] || [];
-      const exposedData = curDatabase.find((e) => e.address.type !== 'custom') || {}; // 访问链接
+      const exposedData = curDatabase.find(e => e.address.type !== 'custom') || {}; // 访问链接
       this.exposedLink = exposedData?.address?.url || '';
     },
 
@@ -763,8 +761,8 @@ export default {
 
         // 普通应用不展示
         if (
-          this.curAppModule.web_config.templated_source_enabled &&
-          this.curAppModule.source_origin !== this.GLOBAL.APP_TYPES.NORMAL_APP
+          this.curAppModule.web_config.templated_source_enabled
+          && this.curAppModule.source_origin !== this.GLOBAL.APP_TYPES.NORMAL_APP
         ) {
           sourceInfo.push(
             {
@@ -776,7 +774,7 @@ export default {
               value: this.initTemplateDesc || '--',
               downloadBtn: this.handleDownloadTemplate,
               downloadBtnText: this.initTemplateDesc === '--' ? '' : this.$t('下载模板代码'),
-            }
+            },
           );
         }
 
@@ -792,8 +790,8 @@ export default {
           const value = this.isSmartApp
             ? smartRoute
             : this.curAppModule.source_origin === 1
-            ? this.$t('代码库')
-            : this.$t('蓝鲸运维开发平台提供源码包');
+              ? this.$t('代码库')
+              : this.$t('蓝鲸运维开发平台提供源码包');
           // 普通应用不展示
           if (this.curAppModule.source_origin !== this.GLOBAL.APP_TYPES.NORMAL_APP) {
             sourceInfo.push({
@@ -828,15 +826,15 @@ export default {
                 {
                   text: this.$t('启用未创建'),
                   value: displays[key]
-                    .filter((item) => !item.is_provisioned)
-                    .map((item) => item.display_name)
+                    .filter(item => !item.is_provisioned)
+                    .map(item => item.display_name)
                     .join(', '),
                 },
                 {
                   text: this.$t('已创建实例'),
                   value: displays[key]
-                    .filter((item) => item.is_provisioned)
-                    .map((item) => ({
+                    .filter(item => item.is_provisioned)
+                    .map(item => ({
                       name: item.display_name,
                       route: {
                         name: 'appServiceInner',
@@ -866,7 +864,7 @@ export default {
                 },
                 {
                   text: this.$t('构建工具'),
-                  value: displays[key].buildpacks.map((item) => item.display_name).join(', '),
+                  value: displays[key].buildpacks.map(item => item.display_name).join(', '),
                 },
               ],
             });
@@ -901,7 +899,7 @@ export default {
               name: this.$t('帮助文档'),
               type: 'link',
               key,
-              infos: displays[key].map((doc) => ({
+              infos: displays[key].map(doc => ({
                 text: doc.name,
                 value: doc.link,
               })),
@@ -921,7 +919,7 @@ export default {
           env: this.environment,
           deployId: this.deploymentId,
         });
-        this.curModuleInfo = res.data.find((e) => e.module_name === this.curModuleId);
+        this.curModuleInfo = res.data.find(e => e.module_name === this.curModuleId);
         // 获取到新的rv_inst数据 重新赋值
         this.watchRvData = {
           rvInst: res.rv_inst,
@@ -947,7 +945,7 @@ export default {
 
       processesData.processes.forEach((processItem) => {
         const { type } = processItem;
-        const packageInfo = packages.find((item) => item.name === type);
+        const packageInfo = packages.find(item => item.name === type);
 
         const processInfo = {
           ...processItem,
@@ -987,7 +985,8 @@ export default {
 
         // 日期转换
         process.instances.forEach((item) => {
-          item.date_time = dayjs(item.start_time).startOf('minute').fromNow();
+          item.date_time = dayjs(item.start_time).startOf('minute')
+            .fromNow();
         });
         allProcesses.push(process);
       });
@@ -1073,7 +1072,7 @@ export default {
           }
         });
       } else if (data.type === 'DELETED') {
-        this.allProcesses = this.allProcesses.filter((process) => process.name !== processData.type);
+        this.allProcesses = this.allProcesses.filter(process => process.name !== processData.type);
       }
     },
 
@@ -1082,7 +1081,8 @@ export default {
       const instanceData = data.object || {};
       this.prevInstanceVersion = data.resource_version || 0;
 
-      instanceData.date_time = dayjs(instanceData.start_time).startOf('minute').fromNow();
+      instanceData.date_time = dayjs(instanceData.start_time).startOf('minute')
+        .fromNow();
       this.allProcesses.forEach((process) => {
         if (process.name === instanceData.process_type) {
           // 新增
