@@ -2990,8 +2990,8 @@ export default {
   方案: 'Plan',
   方案信息: 'Plan information',
   '方案（预发布环境）': 'Plan (Stag Env)',
-  '不选择方案表示命中该规则的应用无法使用此服务': 'Leave plans empty to disallow matched applications from using this service',
-  '不可使用': 'Unavailable',
+  不选择方案表示命中该规则的应用无法使用此服务: 'Leave plans empty to disallow matched applications from using this service',
+  不可使用: 'Unavailable',
   '方案（生产环境）': 'Plan (Prod Env)',
   '获取增强服务配置信息出错，请联系管理员。': 'Error retrieving enhanced service configuration information, please contact the administrator.',
   租户模式: 'Tenant Mode',
@@ -3147,4 +3147,75 @@ export default {
   '该 MCP Server 已开启 OAuth2 公开客户端模式。在 Cursor、CodeBuddy 等工具中通过 OAuth 授权使用时，无需在此申请权限，授权完成后即可使用；仅在需要以当前应用的 ID / 密钥调用该 MCP 时，才需申请权限。': 'This MCP Server has enabled the OAuth2 public client mode. When using it via OAuth authorization in tools such as Cursor or CodeBuddy, there is no need to request permissions here; it is ready for use immediately after authorization. Permission requests are required only when invoking the MCP using the current applications ID and secret.',
   申请成为管理员: 'Apply to become an administrator',
   '请输入 3-20 字符的小写字母、数字、连字符(-)和下划线(_)，以小写字母开头': 'Please enter 3-20 lowercase letters, numbers, hyphens (-), and underscores (_), starting with a lowercase letter',
+  // Agent Sandbox
+  'API Key 支持 e2b_ 和 ark_ 两种前缀格式，E2B SDK 新版请使用 e2b_ 格式':
+    'API Keys support both e2b_ and ark_ prefixes. Use the e2b_ format with newer versions of the E2B SDK.',
+  接入示例: 'Integration examples',
+  代码沙箱: 'Code sandbox',
+  浏览器沙箱: 'Browser sandbox',
+  '浏览器 SDK': 'Browser SDK',
+  方式一: 'Method 1',
+  方式二: 'Method 2',
+  '在 {apiKeys} 页面创建并存储 API Key。API Key 需在环境变量中配置，请参见 Step3。':
+    'Create and save an API Key on the {apiKeys} page. Set the API Key in the environment variables as described in Step 3.',
+  '在【Agent 沙箱】→【沙箱模板】查看 templateID，创建沙箱时传入该值，请参见 Step4。':
+    'Find the templateID under Agent Sandbox → Sandbox templates and pass it when creating a sandbox. See Step 4.',
+  '运行以下示例来创建一个代码沙箱，并运行指定命令：':
+    'Run the following example to create a code sandbox and execute the specified command:',
+  '运行以下示例来创建一个浏览器沙箱，并通过 CDP 连接浏览器：':
+    'Run the following example to create a browser sandbox and connect to its browser over CDP:',
+  '使用 HTTP API 创建沙箱，templateID 取自「沙箱模板」，timeout 为存活秒数：':
+    'Create a sandbox using the HTTP API. Use a templateID from Sandbox templates and specify its lifetime in seconds with timeout:',
+  直接在代码中使用环境变量: 'Set environment variables directly in your code',
+  '在项目根目录创建 .env 文件，写入环境变量：':
+    'Create a .env file in the project root and add the environment variables:',
+  '在代码中使用 python-dotenv 自动加载环境变量：':
+    'Use python-dotenv in your code to load the environment variables automatically:',
+  '请先执行 pip install python-dotenv': 'First run pip install python-dotenv',
+  'templateID 取自「沙箱模板」，timeout 为存活秒数':
+    'Use a templateID from Sandbox templates; timeout is the lifetime in seconds',
+  '执行 Python 代码，代码执行超时时间为 600 秒': 'Execute Python code with a code execution timeout of 600 seconds',
+  '创建 API Key 并选择模板': 'Create an API Key and choose a template',
+  配置环境变量: 'Configure environment variables',
+  启动沙箱: 'Start a sandbox',
+  '安装 SDK': 'Install the SDK',
+  '创建 API Key': 'Create API Key',
+  返回接入示例: 'Back to integration examples',
+  签发时间: 'Issued at',
+  签发人: 'Issued by',
+  '请输入名称，最多 64 个字符': 'Enter a name, up to 64 characters',
+  创建: 'Create',
+  'API Key 创建成功！请复制该密钥，关闭弹窗后将无法再次看到它。':
+    'API Key created successfully! Copy this key; it cannot be viewed again after closing this dialog.',
+  我已复制: 'I have copied it',
+  '确认删除该密钥？': 'Delete this key?',
+  '删除后无法恢复，使用该密钥的请求将立即被拒绝。':
+    'This cannot be undone. Requests using this key will be rejected immediately.',
+  'Agent 沙箱': 'Agent Sandbox',
+  沙箱实例: 'Sandbox instances',
+  沙箱模板: 'Sandbox templates',
+  '沙箱需通过 SDK 或 HTTP API 创建，请参考「沙箱模板」的「接入示例」。':
+    'Create sandboxes using the SDK or HTTP API. See "Integration examples" under "Sandbox templates".',
+  模板: 'Template',
+  已暂停: 'Paused',
+  '搜索沙箱 ID、模板、状态': 'Search sandbox ID, template or status',
+  '沙箱 ID': 'Sandbox ID',
+  启动时间: 'Started at',
+  过期时间: 'Expires at',
+  模板名: 'Template name',
+  '是否销毁该沙箱？': 'Destroy this sandbox?',
+  '销毁后将无法恢复，请谨慎操作': 'This cannot be undone. Proceed with care.',
+  '加载失败，请重试': 'Failed to load. Please try again.',
+  磁盘: 'Disk',
+  销毁失败: 'Failed to destroy sandbox',
+  销毁成功: 'Sandbox destroyed',
+  返回列表: 'Back to list',
+  模板详情: 'Template details',
+  镜像: 'Image',
+  '生命周期 TTL': 'Lifetime (TTL)',
+  网络: 'Network',
+  地域: 'Region',
+  预热: 'Prewarm count',
+  '模板不存在或已下线，请返回列表查看可用模板。':
+    'This template is unavailable or has been removed. Return to the list to view available templates.',
 };
