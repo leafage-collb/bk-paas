@@ -134,9 +134,6 @@
                 <span v-bk-tooltips="resourceTooltip(row)" class="resource-value">{{ formatResources(row) }}</span>
               </template>
             </bk-table-column>
-            <bk-table-column label="TTL" width="120">
-              <template slot-scope="{ row }">{{ formatTimeout(row.timeout) }}</template>
-            </bk-table-column>
             <bk-table-column :label="$t('操作')" width="120">
               <template slot-scope="{ row }">
                 <bk-button text theme="primary" @click="$refs.tools.openGuide(row.template_id)">
@@ -179,7 +176,7 @@
 import SandboxTools from './comps/tools.vue';
 import CloudAppTopBar from '@/components/cloud-app-top-bar.vue';
 import { filterListByKeywordInFields } from '@/common/utils';
-import { displayValue, formatMemory, formatResources, formatRelativeTime, formatTimeout } from './format';
+import { displayValue, formatMemory, formatResources, formatRelativeTime } from './format';
 import { clampPage, getErrorMessage, isEmptyResponse, DEFAULT_PAGE_LIMIT } from './utils';
 
 export default {
@@ -302,7 +299,6 @@ export default {
     displayValue,
     formatResources,
     formatRelativeTime,
-    formatTimeout,
     // 实例与模板各自维护请求序列，此处仅校验应用上下文是否仍然有效
     isCurrentContext(contextVersion) {
       return this.contextVersion === contextVersion;

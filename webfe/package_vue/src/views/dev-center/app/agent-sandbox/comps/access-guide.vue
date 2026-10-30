@@ -26,7 +26,6 @@
         <h3><span>2</span>{{ $t('安装 SDK') }}</h3>
         <bk-radio-group v-model="sandboxType">
           <bk-radio-button value="code">{{ $t('代码沙箱') }}</bk-radio-button>
-          <bk-radio-button value="browser">{{ $t('浏览器沙箱') }}</bk-radio-button>
         </bk-radio-group>
         <div class="code-block">
           <button
@@ -103,7 +102,7 @@ export default {
       return `${BACKEND_URL.replace(/\/+$/, '')}/api/agent_sandbox/e2b`;
     },
     installCommand() {
-      return this.sandboxType === 'code' ? 'pip install e2b-code-interpreter' : 'pip install e2b playwright';
+      return 'pip install \'e2b==2.44.0\' \'e2b-code-interpreter==2.10.0\'';
     },
     environmentCode() {
       return buildEnvironmentCode({
