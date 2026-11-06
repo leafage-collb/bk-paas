@@ -3,48 +3,26 @@
     :key="appCode"
     class="right-main"
   >
-    <app-top-bar
-      v-if="!isCloudNativeApp"
-      :title="$t('告警记录')"
-      :can-create="canCreateModule"
-      :cur-module="curAppModule"
-    >
-      <div
-        slot="right"
-        style="line-height: 50px"
-      >
-        <bk-button
-          text
-          theme="primary"
-          size="small"
-          @click="handleHelp"
-        >
-          {{ $t('文档：如何处理常见告警？') }}
-        </bk-button>
-      </div>
-    </app-top-bar>
     <cloud-app-top-bar
-      v-else
+      class="alarm-navigation"
       :title="$t('告警记录')"
-      :module-id="curModuleId"
-      :app-code="appCode"
-      :cur-module="curAppModule"
+      :nav-list="tabPanels"
+      :active="activeTab"
+      @change="handleTabChange"
     >
-      <div
+      <bk-button
         slot="right"
-        style="line-height: 50px"
+        text
+        theme="primary"
+        size="small"
+        class="p0"
+        @click="handleHelp"
       >
-        <bk-button
-          text
-          theme="primary"
-          size="small"
-          @click="handleHelp"
-        >
-          {{ $t('文档：如何处理常见告警？') }}
-        </bk-button>
-      </div>
+        {{ $t('文档：如何处理常见告警？') }}
+      </bk-button>
     </cloud-app-top-bar>
     <paas-content-loader
+      v-if="activeTab === 'application'"
       :is-loading="isLoading"
       placeholder="table-loading"
       :loader-props="{ operationCount: 1 }"
@@ -53,33 +31,60 @@
     >
       <alarm-record @data-ready="handleDataReady" />
     </paas-content-loader>
+    <gateway-alarm-record
+      v-else
+      :app-code="appCode"
+      class="gateway-alarm-content"
+    />
   </div>
 </template>
 <script>
 import appBaseMixin from '@/mixins/app-base-mixin';
-import appTopBar from '@/components/paas-app-bar';
-import AlarmRecord from './alarm-record';
 import cloudAppTopBar from '@/components/cloud-app-top-bar.vue';
+import AlarmRecord from './alarm-record';
+import GatewayAlarmRecord from './gateway-alarm-record.vue';
+
+const APPLICATION_ALARM_QUERY_KEYS = ['record', 'start_after', 'start_before', 'env', 'search', 'genre'];
+
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: '',
   components: {
-    appTopBar,
     AlarmRecord,
+    GatewayAlarmRecord,
     cloudAppTopBar,
   },
   mixins: [appBaseMixin],
   data() {
     return {
       isLoading: true,
+      activeTab: 'application',
     };
   },
+  computed: {
+    tabPanels() {
+      return [
+        { name: 'application', label: this.$t('应用告警') },
+        { name: 'gateway', label: this.$t('API 网关告警') },
+      ];
+    },
+  },
   watch: {
-    $route() {
+    $route(to, from) {
       this.isLoading = true;
+      if (to.params.id !== from.params.id) {
+        this.activeTab = 'application';
+      } else if (APPLICATION_ALARM_QUERY_KEYS.some(key => to.query[key] && to.query[key] !== from.query[key])) {
+        this.activeTab = 'application';
+      }
     },
   },
   methods: {
+    handleTabChange(tab) {
+      if (tab === this.activeTab) return;
+      this.isLoading = true;
+      this.activeTab = tab;
+    },
     handleHelp() {
       window.open(this.GLOBAL.DOC.MONITOR_INTRO);
     },
@@ -90,10 +95,21 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.alarm-navigation {
+  /deep/ .bk-tab-label-wrapper .bk-tab-label-list .bk-tab-label-item {
+    min-width: 100px;
+    padding: 0 18px;
+  }
+}
+
 .alarm-middle {
   margin: 16px auto 30px;
   width: calc(100% - 48px);
   background: #fff;
   padding: 16px 24px;
+}
+
+.gateway-alarm-content {
+  margin: 16px 24px 30px;
 }
 </style>
