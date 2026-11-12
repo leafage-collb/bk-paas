@@ -135,12 +135,22 @@
               :max-width="560"
             >
               <span class="alarm-message-summary">{{ row.message }}</span>
-              <div
+              <ul
                 slot="content"
                 class="alarm-message-detail"
               >
-                {{ row.message }}
-              </div>
+                <li
+                  v-for="(line, index) in row.message.split(/\r\n?|\n/)"
+                  :key="index"
+                  class="alarm-message-line"
+                >
+                  <span
+                    v-if="line.trim()"
+                    aria-hidden="true"
+                  >•</span>
+                  <span v-text="line" />
+                </li>
+              </ul>
             </bk-popover>
             <span v-else>--</span>
           </template>
@@ -413,9 +423,18 @@ export default {
 }
 .alarm-message-detail {
   max-height: 50vh;
+  margin: 0;
+  padding: 0;
   overflow: auto;
   overflow-wrap: anywhere;
+  list-style: none;
+  line-height: 20px;
   white-space: pre-wrap;
+}
+.alarm-message-line {
+  display: flex;
+  gap: 4px;
+  min-height: 20px;
 }
 .alarm-status {
   display: inline-block;

@@ -58,24 +58,33 @@ export default {
   data() {
     return {
       isLoading: true,
-      activeTab: 'application',
+      selectedTab: '',
     };
   },
   computed: {
     tabPanels() {
+      const gatewayTab = { name: 'gateway', label: this.$t('API 网关告警') };
+      const appType = this.$store.state.appInfo[this.appCode]?.application?.type;
+      if (appType === 'engineless_app') {
+        return [gatewayTab];
+      }
       return [
         { name: 'application', label: this.$t('应用告警') },
-        { name: 'gateway', label: this.$t('API 网关告警') },
+        gatewayTab,
       ];
+    },
+    activeTab() {
+      return this.tabPanels.find(({ name }) => name === this.selectedTab)?.name || this.tabPanels[0].name;
     },
   },
   watch: {
     $route(to, from) {
       this.isLoading = true;
-      if (to.params.id !== from.params.id) {
-        this.activeTab = 'application';
-      } else if (APPLICATION_ALARM_QUERY_KEYS.some(key => to.query[key] && to.query[key] !== from.query[key])) {
-        this.activeTab = 'application';
+      if (
+        to.params.id !== from.params.id
+        || APPLICATION_ALARM_QUERY_KEYS.some(key => to.query[key] && to.query[key] !== from.query[key])
+      ) {
+        this.selectedTab = '';
       }
     },
   },
@@ -83,7 +92,7 @@ export default {
     handleTabChange(tab) {
       if (tab === this.activeTab) return;
       this.isLoading = true;
-      this.activeTab = tab;
+      this.selectedTab = tab;
     },
     handleHelp() {
       window.open(this.GLOBAL.DOC.MONITOR_INTRO);
