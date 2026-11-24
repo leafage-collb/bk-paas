@@ -88,12 +88,7 @@
               </bk-button>
             </template>
           </bk-table-column>
-          <table-empty
-            slot="empty"
-            :is-error="isError"
-            :explanation="errorMessage"
-            @reacquire="loadKeys"
-          />
+          <table-empty slot="empty" />
         </bk-table>
       </div>
     </bk-sideslider>
@@ -199,7 +194,7 @@
 <script>
 import UserDisplay from '@/components/user/user-display.vue';
 import { displayValue, formatRelativeTime } from '../format';
-import { getErrorMessage, isEmptyResponse } from '../utils';
+import { isEmptyResponse } from '../utils';
 
 // 单个应用允许持有的 API Key 上限
 const MAX_KEY_COUNT = 5;
@@ -224,8 +219,6 @@ export default {
       visible: false,
       keys: [],
       loading: false,
-      isError: false,
-      errorMessage: '',
       createVisible: false,
       form: { name: '' },
       createRules: {
@@ -252,9 +245,9 @@ export default {
     nameMaxLength() {
       return NAME_MAX_LENGTH;
     },
-    // 列表不可用（加载中或加载失败）时不允许创建
+    // 列表加载中时不允许创建
     listUnavailable() {
-      return this.loading || this.isError;
+      return this.loading;
     },
     reachedKeyLimit() {
       return this.keys.length >= MAX_KEY_COUNT;
@@ -310,28 +303,23 @@ export default {
       this.secretVisible = false;
     },
     showError(error) {
+      // 401/403 已由请求层统一处理，无需重复提示
       if (error.status === 401 || error.status === 403) {
         return;
       }
-      this.$paasMessage({
-        theme: 'error',
-        message: getErrorMessage(error, this.$t('接口异常')),
-      });
+      this.catchErrorHandler(error);
     },
     async loadKeys() {
       const { appCode, contextVersion } = this;
       this.listRequestId += 1;
       const requestId = this.listRequestId;
       this.loading = true;
-      this.isError = false;
-      this.errorMessage = '';
       try {
         const data = await this.$store.dispatch('agentSandbox/listApiKeys', { appCode });
         if (!this.isCurrent(appCode, contextVersion) || requestId !== this.listRequestId) {
           return;
         }
         if (!Array.isArray(data)) {
-          this.isError = true;
           this.keys = [];
           return;
         }
@@ -339,8 +327,7 @@ export default {
       } catch (error) {
         if (this.isCurrent(appCode, contextVersion) && requestId === this.listRequestId) {
           this.keys = [];
-          this.isError = true;
-          this.errorMessage = getErrorMessage(error, this.$t('接口异常'));
+          this.catchErrorHandler(error);
         }
       } finally {
         if (this.isCurrent(appCode, contextVersion) && requestId === this.listRequestId) {
