@@ -40,6 +40,10 @@ const axiosInstance = axios.create({
  * request interceptor
  */
 axiosInstance.interceptors.request.use((config) => {
+  // 无 cookie 时浏览器 Accept-Language 可能是 en,zh-CN，后台会取到 en。覆盖为当前界面语言。
+  config.headers = config.headers || {};
+  config.headers['Accept-Language'] = store.state.localLanguage || 'zh-cn';
+
   // 绝对路径不走 mock
   if (!/^(https|http)?:\/\//.test(config.url)) {
     const prefix = config.url.indexOf('?') === -1 ? '?' : '&';
