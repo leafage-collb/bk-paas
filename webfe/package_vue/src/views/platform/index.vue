@@ -9,6 +9,7 @@
     </div>
     <div class="right-content">
       <TopBar
+        ref="topBar"
         :title="title"
         :tab-panels="panels"
         @tab-change="handleTabChange"
@@ -45,6 +46,7 @@
 </template>
 
 <script>
+import { isNavigationFailure } from 'vue-router';
 import paasNav from '@/components/paasNav';
 import { processNavData } from '@/common/utils';
 import { bus } from '@/common/bus';
@@ -118,12 +120,14 @@ export default {
     this.navItems = navItems;
   },
   methods: {
+    // 用路由中的 active 选中页签，没有则用第一个，并写回路由。
     setDefaultTabActive() {
       const defaultActive = this.panels[0]?.name || '';
       this.active = this.routeTabActive || defaultActive;
       this.handleTabChange(this.active);
     },
-    handleTabChange(active) {
+    // 把页签写入 query；未保存确认取消导航时，恢复为当前路由对应的页签。
+    async handleTabChange(active) {
       const { path, query, name } = this.$route;
       let newQuery = {};
       // 集群配置特殊处理
@@ -138,11 +142,15 @@ export default {
           ...(active && { active }),
         };
       }
-      this.$router.push({
-        path,
-        query: newQuery,
-      });
-      this.active = active;
+      try {
+        await this.$router.push({ path, query: newQuery });
+      } catch (error) {
+        // 侧栏未保存时可以取消导航，同时恢复 Tab，避免标题与页面内容不一致。
+        if (!isNavigationFailure(error)) throw error;
+      } finally {
+        this.active = this.routeTabActive || this.panels[0]?.name || '';
+        if (this.$refs.topBar) this.$refs.topBar.active = this.active;
+      }
     },
   },
 };

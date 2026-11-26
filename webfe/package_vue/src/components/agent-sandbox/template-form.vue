@@ -37,6 +37,8 @@
             <p v-if="field.hint" class="field-hint">{{ field.hint }}</p>
             <p v-if="fieldErrors[field.key]" class="field-error">{{ fieldErrors[field.key] }}</p>
           </bk-form-item>
+          <!-- 平台的启用、可见由调用方插入，应用模式没有这段 -->
+          <slot v-if="group.key === 'basic'" name="basic-extra" />
           <template v-if="group.key === 'image'">
             <bk-form-item :label="$t('环境变量')">
               <key-value-editor
@@ -114,6 +116,8 @@
             <p class="field-hint">{{ $t('不挂载时使用运行时默认的根文件系统；挂载时为每个沙箱创建一块云盘，随沙箱销毁而删除') }}</p>
             <p v-if="fieldErrors.disk_size_mb" class="field-error">{{ fieldErrors.disk_size_mb }}</p>
           </bk-form-item>
+          <!-- 平台的每集群预热由调用方插入 -->
+          <slot name="resource-extra" />
         </div>
       </bk-collapse-item>
     </bk-collapse>
@@ -121,24 +125,6 @@
 </template>
 
 <script>
-/*
- * TencentBlueKing is pleased to support the open source community by making
- * 蓝鲸智云 - PaaS 平台 (BlueKing - PaaS System) available.
- * Copyright (C) Tencent. All rights reserved.
- * Licensed under the MIT License (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- *     http://opensource.org/licenses/MIT
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * We undertake not to change the open source license (MIT license) applicable
- * to the current version of the project delivered to anyone in the future.
- */
-
 import KeyValueEditor from '@/components/key-value-editor';
 
 const CPU_OPTIONS = [1, 2, 4, 8];
@@ -153,7 +139,13 @@ export default {
   components: { KeyValueEditor },
   props: {
     templateData: { type: Object, default: () => ({}) },
-    appCode: { type: String, required: true },
+    appCode: { type: String, default: '' },
+    // 平台模式没有应用前缀，模板 ID 只校验自身 2–31 位。
+    mode: {
+      type: String,
+      default: 'application',
+      validator: value => ['application', 'platform'].includes(value),
+    },
     isEdit: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
     fieldErrors: { type: Object, default: () => ({}) },
@@ -181,6 +173,7 @@ export default {
   },
   computed: {
     maxTemplateIdLength() {
+      if (this.mode === 'platform') return 31;
       const prefix = `${this.appCode.toLowerCase().replace(/_/g, '0us0')}--`;
       return RESOURCE_NAME_MAX_LENGTH - prefix.length;
     },
@@ -188,8 +181,10 @@ export default {
       const fields = [
         {
           key: 'template_id', label: this.$t('模板 ID'), required: true, maxlength: 31,
-          placeholder: this.$t('例如 my-runtime'),
-          hint: this.$t('SDK 创建沙箱时传入的 templateID，创建后不可修改。小写字母、数字、连接符，2-31 个字符，与应用 ID 合计不超过 61 个字符'),
+          placeholder: this.$t('例如 e2b-envd'),
+          hint: this.mode === 'platform'
+            ? this.$t('SDK 创建沙箱时传入的 templateID，须与底层 e2b 网关一致，创建后不可修改')
+            : this.$t('SDK 创建沙箱时传入的 templateID，创建后不可修改。小写字母、数字、连接符，2-31 个字符，与应用 ID 合计不超过 61 个字符'),
         },
         { key: 'name', label: this.$t('名称'), required: true, maxlength: 64 },
         { key: 'description', label: this.$t('描述'), required: false, maxlength: 200 },
@@ -217,7 +212,7 @@ export default {
           message: this.$t('模板 ID 格式不正确'),
           trigger: 'blur',
         }, {
-          validator: value => this.isEdit
+          validator: value => this.mode === 'platform' || this.isEdit
             || this.maxTemplateIdLength < TEMPLATE_ID_MIN_LENGTH
             || value.length <= this.maxTemplateIdLength,
           message: this.$t('应用标识与模板 ID 组合后的资源名不能超过 61 个字符'),
@@ -276,8 +271,9 @@ export default {
     getDraftState() {
       return this.formData;
     },
+    // 校验表单并转换成提交字段；应用 ID 过长时直接拒绝创建。
     async validate() {
-      if (!this.isEdit && this.maxTemplateIdLength < TEMPLATE_ID_MIN_LENGTH) {
+      if (this.mode === 'application' && !this.isEdit && this.maxTemplateIdLength < TEMPLATE_ID_MIN_LENGTH) {
         const error = new Error(this.$t('应用 ID 过长，无法创建自定义模板'));
         error.code = 'AGENT_SANDBOX_E2B_APP_CODE_TOO_LONG';
         error.detail = error.message;

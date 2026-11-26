@@ -3260,7 +3260,7 @@ export default {
   挂载独立系统盘: 'Attach a dedicated system disk',
   '不挂载时使用运行时默认的根文件系统；挂载时为每个沙箱创建一块云盘，随沙箱销毁而删除': 'When not selected, the runtime default root filesystem is used. When selected, a cloud disk is created for each sandbox and deleted together with the sandbox.',
   工作目录: 'Working directory',
-  '例如 my-runtime': 'For example, my-runtime',
+  '例如 e2b-envd': 'For example, e2b-envd',
   'SDK 创建沙箱时传入的 templateID，创建后不可修改。小写字母、数字、连接符，2-31 个字符，与应用 ID 合计不超过 61 个字符': 'The templateID passed when creating a sandbox through the SDK. It cannot be changed after creation. Use 2-31 lowercase letters, digits or hyphens; the total length together with the application ID must not exceed 61 characters.',
   '镜像须内置 envd': 'The image must include envd',
   '最多输入 {length} 个字符': 'Enter up to {length} characters',

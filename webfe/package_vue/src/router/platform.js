@@ -90,6 +90,12 @@ const authorizationCode = () => import(/* webpackChunkName: 'platform-config' */
     window.showDeployTip(error);
   });
 
+const platformAgentSandbox = () => import(/* webpackChunkName: 'platform-config' */ '@/views/platform/agent-sandbox')
+  .then(module => module)
+  .catch((error) => {
+    window.showDeployTip(error);
+  });
+
 export const platformRouters = [
   {
     path: '/plat-mgt/',
@@ -182,6 +188,19 @@ export const platformRouters = [
         name: 'templateConfig',
         meta: {
           title: i18n.t('模版配置'),
+        },
+      },
+      {
+        path: 'agent-sandbox',
+        component: platformAgentSandbox,
+        name: 'platformAgentSandbox',
+        meta: {
+          title: i18n.t('Agent 沙箱'),
+          // 外壳按 name 写入 query.active。
+          panels: [
+            { name: 'overview', label: i18n.t('沙箱概览') },
+            { name: 'templates', label: i18n.t('沙箱模板') },
+          ],
         },
       },
       {

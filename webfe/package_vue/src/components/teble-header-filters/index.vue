@@ -9,7 +9,11 @@
     trigger="click"
   >
     <div class="filter-view">
-      <span class="label">{{ label }}</span>
+      <span
+        class="label"
+        :class="{ 'custom-header-cell': tips }"
+        v-bk-tooltips="labelTips"
+      >{{ label }}</span>
       <span
         id="filter-icon"
         :class="[iconClass, { 'is-selected': selected !== 'all' }]"
@@ -47,11 +51,30 @@ export default {
       type: Array,
       default: () => [],
     },
+    tips: {
+      type: String,
+      default: '',
+    },
+    tipsWidth: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
       selected: '',
     };
+  },
+  computed: {
+    labelTips() {
+      const config = {
+        content: this.tips,
+        disabled: !this.tips,
+        placement: 'top',
+      };
+      if (this.tipsWidth) config.width = this.tipsWidth;
+      return config;
+    },
   },
   watch: {
     active: {

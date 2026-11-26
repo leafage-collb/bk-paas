@@ -100,6 +100,19 @@ export default [
   },
   {
     groupId: 'config',
+    name: 'platformAgentSandbox',
+    label: i18n.t('Agent 沙箱'),
+    iconfontName: 'fx',
+    matchRouters: ['platformAgentSandbox'],
+    destRoute: {
+      name: 'platformAgentSandbox',
+      // 菜单默认进入概览。
+      query: { active: 'overview' },
+    },
+    sublist: [],
+  },
+  {
+    groupId: 'config',
     name: 'builtInEnvVariable',
     label: i18n.t('内置环境变量'),
     iconfontName: 'variable',

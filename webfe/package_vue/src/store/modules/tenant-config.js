@@ -21,6 +21,10 @@
  */
 import http from '@/api';
 
+const sandboxUrl = () => `${BACKEND_URL}/api/plat_mgt/agent_sandbox/e2b`;
+// 请求被取消时 Promise 不会结束，页面刷新不能走默认取消。
+const sandboxRequestConfig = { fromCache: false, cancelPrevious: false, cancelWhenRouteChange: false };
+
 export default {
   namespaced: true,
   state: {
@@ -38,6 +42,65 @@ export default {
     },
   },
   actions: {
+    /**
+     * Agent 沙箱-获取模板列表
+     */
+    getAgentSandboxTemplates() {
+      return http.get(`${sandboxUrl()}/templates/`, {}, sandboxRequestConfig);
+    },
+    /**
+     * Agent 沙箱-获取模板详情
+     * @param {Object} payload
+     * @param {string} payload.templateId 模板 ID
+     */
+    getAgentSandboxTemplateDetail({}, { templateId }) {
+      return http.get(`${sandboxUrl()}/templates/${encodeURIComponent(templateId)}/`, {}, sandboxRequestConfig);
+    },
+    /**
+     * Agent 沙箱-创建模板
+     * @param {Object} payload
+     * @param {Object} payload.data 模板配置
+     */
+    createAgentSandboxTemplate({}, { data }) {
+      return http.post(`${sandboxUrl()}/templates/`, data, sandboxRequestConfig);
+    },
+    /**
+     * Agent 沙箱-更新模板
+     * @param {Object} payload
+     * @param {string} payload.templateId 模板 ID
+     * @param {Object} payload.data 模板配置
+     */
+    updateAgentSandboxTemplate({}, { templateId, data }) {
+      return http.put(`${sandboxUrl()}/templates/${encodeURIComponent(templateId)}/`, data, sandboxRequestConfig);
+    },
+    /**
+     * Agent 沙箱-删除模板
+     * @param {Object} payload
+     * @param {string} payload.templateId 模板 ID
+     */
+    deleteAgentSandboxTemplate({}, { templateId }) {
+      return http.delete(`${sandboxUrl()}/templates/${encodeURIComponent(templateId)}/`, {}, sandboxRequestConfig);
+    },
+    /**
+     * Agent 沙箱-获取模板同步状态
+     */
+    getAgentSandboxTemplateSyncStatus() {
+      return http.get(`${sandboxUrl()}/template_sync/templates/`, {}, sandboxRequestConfig);
+    },
+    /**
+     * Agent 沙箱-获取集群同步状态
+     */
+    getAgentSandboxClusterSyncStatus() {
+      return http.get(`${sandboxUrl()}/template_sync/clusters/`, {}, sandboxRequestConfig);
+    },
+    /**
+     * Agent 沙箱-触发模板同步
+     * @param {Object} [payload]
+     * @param {Object} [payload.data] 同步参数
+     */
+    syncAgentSandboxTemplates({}, { data = {} } = {}) {
+      return http.post(`${sandboxUrl()}/template_sync/`, data, sandboxRequestConfig);
+    },
     /**
      * 获取加密配置
      */
