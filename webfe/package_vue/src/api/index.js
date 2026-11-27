@@ -213,8 +213,9 @@ function handleReject(error, config) {
     } else if (status === 500) {
       nextError.message = i18n.t('系统出现异常');
     } else if (status === 502) {
-      // 屏蔽 502
       nextError.message = i18n.t('系统出现异常');
+      if (config.rejectOn502) return Promise.reject(nextError);
+      // 兼容既有页面屏蔽 502 的行为。
       if (nextError.response.config.urlId === 'getClusterList') {
         return Promise.resolve({ data: {} });
       }
@@ -275,6 +276,8 @@ function initConfig(method, url, userConfig) {
     requestId: `${method}_${url}`,
     // 是否全局捕获异常
     globalError: true,
+    // 是否将 502 交给调用方按失败处理
+    rejectOn502: false,
     // 是否直接复用缓存的请求
     fromCache: false,
     // 是否在请求发起前清楚缓存

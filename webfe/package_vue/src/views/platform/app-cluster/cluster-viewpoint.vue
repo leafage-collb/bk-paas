@@ -9,7 +9,7 @@
       <bk-table-column
         :label="$t('集群名称')"
         prop="name"
-        width="160"
+        min-width="200"
         show-overflow-tooltip
         :render-header="$renderHeader"
         class-name="cluster-name-column"
@@ -22,6 +22,11 @@
           >
             {{ row.name }}
           </a>
+          <span
+            v-if="row.e2b_enabled === true || row.e2b_enabled === false"
+            :class="['e2b-tag', { disabled: row.e2b_enabled === false }]"
+            @click.stop="$emit('toggle', { flag: true, name: row.name, tab: 'e2b' })"
+          >{{ row.e2b_enabled === false ? $t('e2b 已停用') : 'e2b' }}</span>
           <i
             v-if="clustersStatus[row.name]?.hasIcon"
             v-bk-tooltips="$t('集群配置未完成')"
@@ -194,6 +199,15 @@ import DeleteClusterDialog from './comps/delete-cluster-dialog.vue';
 import DeleteClusterAlertDialog from './comps/delete-cluster-alert-dialog.vue';
 import { mapState } from 'vuex';
 
+// 列表返回 e2b_config；没有该字段或 enabled 非法时不写 e2b_enabled，标签不展示。
+function e2bEnabledFromListItem(item) {
+  if (!Object.prototype.hasOwnProperty.call(item, 'e2b_config')) return undefined;
+  const config = item.e2b_config;
+  if (config === null) return null;
+  if (config && (config.enabled === true || config.enabled === false)) return config.enabled;
+  return undefined;
+}
+
 export default {
   name: 'TenantViewpoint',
   components: {
@@ -258,14 +272,19 @@ export default {
     async getClusterList() {
       this.isTableLoading = true;
       try {
-        const res = await this.$store.dispatch('tenant/getClusterList');
-        this.tenantList = res.map(item => ({
-          ...item,
-          availableTenants: item.available_tenants,
-          feature: item.feature_flags,
-          availableTenantTagIndex: 0,
-          featureTagIndex: 0,
-        }));
+        const res = await this.$store.dispatch('tenant/getClusterList', { fromCache: false });
+        this.tenantList = res.map((item) => {
+          const row = {
+            ...item,
+            availableTenants: item.available_tenants,
+            feature: item.feature_flags,
+            availableTenantTagIndex: 0,
+            featureTagIndex: 0,
+          };
+          const e2bEnabled = e2bEnabledFromListItem(item);
+          if (e2bEnabled !== undefined) row.e2b_enabled = e2bEnabled;
+          return row;
+        });
         this.displayClusterList = this.tenantList;
         // 获取集群列表状态
         this.$emit('get-status', res);
@@ -409,7 +428,7 @@ export default {
     },
     // 详情-节点
     toNodeDetail(row) {
-      this.$emit('toggle', { flag: true, name: row.name });
+      this.$emit('toggle', { flag: true, name: row.name, tab: 'node' });
       this.$store.commit('tenant/updatedDtailTabActive', 'DetailNodeInfo');
     },
   },
@@ -430,6 +449,21 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .e2b-tag {
+    flex-shrink: 0;
+    margin-left: 6px;
+    padding: 0 6px;
+    border-radius: 2px;
+    background: rgba(20, 165, 104, 0.1);
+    color: #14a568;
+    font-size: 12px;
+    line-height: 20px;
+    cursor: pointer;
+    &.disabled {
+      background: #f0f1f5;
+      color: #979ba5;
+    }
   }
   .nodes {
     padding: 0 5px;

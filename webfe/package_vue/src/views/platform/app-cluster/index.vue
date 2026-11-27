@@ -4,7 +4,7 @@
     :style="{ height: computedHeight }"
   >
     <Config v-if="tabActive === 'config'" />
-    <List v-else />
+    <List v-else ref="list" />
   </div>
 </template>
 
@@ -42,6 +42,17 @@ export default {
     } else {
       next();
     }
+  },
+  async beforeRouteUpdate(to, from, next) {
+    next(await this.canLeave());
+  },
+  async beforeRouteLeave(to, from, next) {
+    next(await this.canLeave());
+  },
+  methods: {
+    canLeave() {
+      return this.$refs.list ? this.$refs.list.beforeLeave() : true;
+    },
   },
 };
 </script>

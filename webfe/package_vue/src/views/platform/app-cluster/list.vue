@@ -38,6 +38,7 @@
     </div>
     <ClusterDetails
       v-else
+      ref="details"
       @toggle="handleToggleDetails"
       @get-status="getClusterListStatus"
     />
@@ -73,17 +74,25 @@ export default {
     },
   },
   methods: {
+    beforeLeave() {
+      return this.$refs.details ? this.$refs.details.beforeLeave() : true;
+    },
     handlerChange(data) {
       this.buttonActive = data.name;
     },
     // 打开集群详情
     handleToggleDetails(data) {
       const { path, query } = this.$route;
-      let newQuery = { ...query };
+      const newQuery = { ...query };
       if (typeof data === 'boolean') {
-        newQuery = { active: query.active };
+        delete newQuery.type;
+        delete newQuery.cluster;
+        delete newQuery.tab;
       } else {
         newQuery.type = 'detail';
+        newQuery.cluster = data.name;
+        if (data.tab) newQuery.tab = data.tab;
+        else delete newQuery.tab;
         this.$store.commit('tenant/updateDetailActiveName', data.name);
       }
       this.$router.push({ path, query: newQuery });

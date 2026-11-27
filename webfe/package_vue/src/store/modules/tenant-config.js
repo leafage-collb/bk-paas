@@ -23,7 +23,12 @@ import http from '@/api';
 
 const sandboxUrl = () => `${BACKEND_URL}/api/plat_mgt/agent_sandbox/e2b`;
 // 请求被取消时 Promise 不会结束，页面刷新不能走默认取消。
-const sandboxRequestConfig = { fromCache: false, cancelPrevious: false, cancelWhenRouteChange: false };
+const sandboxRequestConfig = {
+  fromCache: false,
+  cancelPrevious: false,
+  cancelWhenRouteChange: false,
+  rejectOn502: true,
+};
 
 export default {
   namespaced: true,

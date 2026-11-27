@@ -42,6 +42,11 @@
             @click="switchDetails(item.name)"
           >
             {{ item.name }}
+            <span
+              v-if="item.e2b_enabled === true || item.e2b_enabled === false"
+              :class="['e2b-tag', { disabled: item.e2b_enabled === false }]"
+              @click.stop="switchDetails(item.name, 'e2b')"
+            >{{ item.e2b_enabled === false ? $t('e2b 已停用') : 'e2b' }}</span>
             <i
               v-if="clustersStatus[item.name]?.hasIcon"
               class="paasng-icon paasng-unfinished"
@@ -61,10 +66,11 @@
           <bk-icon type="close" />
         </div>
         <bk-tab
-          :active.sync="tabActive"
+          :active="tabActive"
           type="card"
           ext-cls="cluster-details-tab"
-          :key="`${activeName}-${Object.values(curClustersStatus).join('-')}`"
+          :key="`${activeName}-${tabActive === 'DetailE2b' ? '' : Object.values(curClustersStatus).join('-')}`"
+          @tab-change="handleTabChange"
         >
           <bk-tab-panel
             v-for="(panel, index) in panels"
@@ -74,7 +80,7 @@
             <template slot="label">
               <span>{{ panel.label }}</span>
               <template
-                v-if="panel.key !== 'node' && Object.keys(curClustersStatus)?.length && curClustersStatus?.hasIcon"
+                v-if="!['node', 'e2b'].includes(panel.key) && curClustersStatus?.hasIcon"
               >
                 <i
                   v-if="!curClustersStatus?.[panel.key]"
@@ -87,10 +93,14 @@
             <!-- 详情 -->
             <keep-alive>
               <component
+                v-if="activeName"
+                ref="detail"
                 :is="tabActive"
+                :key="`${activeName}-${tabActive}`"
                 :data="curDetailData"
                 :cluster-name="activeName"
                 :default-config="clusterDefaultConfigs"
+                @config-change="handleE2bConfigChange"
               />
             </keep-alive>
           </div>
@@ -105,7 +115,18 @@ import DetailInfo from './detail-info.vue';
 import DetailComponents from './detail-components.vue';
 import DetailFeature from './detail-feature.vue';
 import DetailNodeInfo from './detail-node-info.vue';
+import DetailE2b from './detail-e2b.vue';
 import { mapState } from 'vuex';
+
+// 列表返回 e2b_config；没有该字段或 enabled 非法时不写 e2b_enabled，标签不展示。
+function e2bEnabledFromListItem(item) {
+  if (!Object.prototype.hasOwnProperty.call(item, 'e2b_config')) return undefined;
+  const config = item.e2b_config;
+  if (config === null) return null;
+  if (config && (config.enabled === true || config.enabled === false)) return config.enabled;
+  return undefined;
+}
+
 export default {
   name: 'ClusterDetails',
   components: {
@@ -113,6 +134,7 @@ export default {
     DetailComponents,
     DetailFeature,
     DetailNodeInfo,
+    DetailE2b,
   },
   data() {
     return {
@@ -127,6 +149,7 @@ export default {
         { name: 'DetailComponents', label: this.$t('集群组件'), key: 'component' },
         { name: 'DetailFeature', label: this.$t('集群特性'), key: 'feature' },
         { name: 'DetailNodeInfo', label: this.$t('节点信息'), key: 'node' },
+        { name: 'DetailE2b', label: this.$t('e2b 沙箱'), key: 'e2b' },
       ],
       searchValue: '',
       leftLoading: false,
@@ -162,27 +185,51 @@ export default {
     this.$store.commit('tenant/updatedDtailTabActive', 'DetailInfo');
   },
   methods: {
+    beforeLeave() {
+      return this.$refs.detail?.beforeLeave ? this.$refs.detail.beforeLeave() : true;
+    },
     init() {
+      const panel = this.panels.find(item => item.key === this.$route.query.tab);
+      this.tabActive = this.$route.query.tab === undefined
+        ? this.detailTabActive || 'DetailInfo'
+        : panel?.name || 'DetailInfo';
       this.getClusterList();
       this.getClusterDefaultConfigs();
-      this.tabActive = this.detailTabActive || 'DetailInfo';
     },
-    switchDetails(name) {
-      this.activeName = name || '';
-      this.getClusterDetails();
+    switchDetails(name, tab = this.panels.find(panel => panel.name === this.tabActive)?.key) {
+      const { path, query } = this.$route;
+      if (name === this.activeName && tab === this.panels.find(panel => panel.name === this.tabActive)?.key) return;
+      this.$router.push({ path, query: { ...query, type: 'detail', cluster: name, tab } });
+    },
+    handleTabChange(name) {
+      if (!this.activeName || name === this.tabActive) return;
+      const { path, query } = this.$route;
+      const tab = this.panels.find(panel => panel.name === name)?.key;
+      this.$router.push({ path, query: { ...query, type: 'detail', cluster: this.activeName, tab } });
+    },
+    handleE2bConfigChange({ clusterName, enabled }) {
+      const cluster = this.tenantList.find(item => item.name === clusterName);
+      if (cluster) this.$set(cluster, 'e2b_enabled', enabled);
     },
     // 获取集群列表
     async getClusterList() {
       this.leftLoading = true;
       this.contentLoading = true;
       try {
-        const res = await this.$store.dispatch('tenant/getClusterList');
-        this.tenantList = res;
-        const { clusterId } = this.$route.params;
-        if (clusterId) {
-          this.switchDetails(clusterId);
-        } else {
-          this.switchDetails(this.detailActiveName || res[0]?.name);
+        const res = await this.$store.dispatch('tenant/getClusterList', { fromCache: false });
+        this.tenantList = res.map((item) => {
+          const e2bEnabled = e2bEnabledFromListItem(item);
+          if (e2bEnabled === undefined) return item;
+          return { ...item, e2b_enabled: e2bEnabled };
+        });
+        const requestedName = this.$route.query.cluster ?? this.$route.params.clusterId;
+        const clusterName = requestedName ?? (this.detailActiveName || res[0]?.name);
+        if (clusterName !== undefined) {
+          if (!res.some(item => item.name === clusterName)) {
+            throw Object.assign(new Error(this.$t('集群不存在')), { code: 404 });
+          }
+          this.activeName = clusterName;
+          await this.getClusterDetails();
         }
         setTimeout(() => {
           // 获取集群状态
@@ -192,6 +239,7 @@ export default {
         this.catchErrorHandler(e);
       } finally {
         this.leftLoading = false;
+        this.contentLoading = false;
       }
     },
     // 获取集群详情
@@ -235,6 +283,22 @@ export default {
     font-size: 14px;
     color: #f8b64f;
     transform: translateY(0);
+  }
+  .e2b-tag {
+    float: right;
+    display: inline-block;
+    margin: 11px 0 0 6px;
+    padding: 0 6px;
+    border-radius: 2px;
+    background: rgba(20, 165, 104, 0.1);
+    color: #14a568;
+    font-size: 12px;
+    line-height: 20px;
+    cursor: pointer;
+    &.disabled {
+      background: #f0f1f5;
+      color: #979ba5;
+    }
   }
   /deep/ .clustertab-edit-btn-cls {
     position: absolute;

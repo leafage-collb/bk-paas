@@ -22,6 +22,13 @@
 import http from '@/api';
 import { validateClusterName, createSafeObject, safeSet, safeHas, safeGet } from '@/utils/safe-object';
 
+const e2bRequestConfig = {
+  fromCache: false,
+  cancelPrevious: false,
+  cancelWhenRouteChange: false,
+  rejectOn502: true,
+};
+
 export default {
   namespaced: true,
   state: {
@@ -154,9 +161,39 @@ export default {
     /**
      * 获取集群列表
      */
-    getClusterList({}) {
+    getClusterList({}, config = {}) {
       const url = `${BACKEND_URL}/api/plat_mgt/infras/clusters/`;
-      return http.get(url);
+      return http.get(url, {}, config);
+    },
+    /**
+     * 获取集群 e2b 接入配置，未接入返回 404。
+     */
+    getClusterE2bConfig({}, { clusterName }) {
+      if (!validateClusterName(clusterName)) return Promise.reject(new Error('Invalid cluster name'));
+      const url = `${BACKEND_URL}/api/plat_mgt/infras/clusters/${encodeURIComponent(clusterName)}/e2b_config/`;
+      return http.get(url, {}, e2bRequestConfig);
+    },
+    /**
+     * 新建或更新集群 e2b 接入配置，Key 仅写入，不存入 state。
+     */
+    async updateClusterE2bConfig({}, { clusterName, data }) {
+      if (!validateClusterName(clusterName)) throw new Error('Invalid cluster name');
+      const url = `${BACKEND_URL}/api/plat_mgt/infras/clusters/${encodeURIComponent(clusterName)}/e2b_config/`;
+      const requestId = `put_${url}`;
+      try {
+        return await http.put(url, data, { ...e2bRequestConfig, requestId });
+      } finally {
+        // fromCache:false 仍会缓存 Promise，写入结束即释放可能持有凭证的请求。
+        http.cancelCache(requestId);
+      }
+    },
+    /**
+     * 删除集群 e2b 接入配置。
+     */
+    deleteClusterE2bConfig({}, { clusterName }) {
+      if (!validateClusterName(clusterName)) return Promise.reject(new Error('Invalid cluster name'));
+      const url = `${BACKEND_URL}/api/plat_mgt/infras/clusters/${encodeURIComponent(clusterName)}/e2b_config/`;
+      return http.delete(url, {}, e2bRequestConfig);
     },
     /**
      * 获取集群使用情况
